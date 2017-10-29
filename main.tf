@@ -28,16 +28,28 @@ data "template_file" "ecs_user_data" {
   }
 }
 
-module "ecs_asg" {
-  source               = "tf-ecs-asg"
-  image_id             = "${data.aws_ami.ecs.id}"
-  instance_type        = "t2.small"
-  iam_instance_profile = "${aws_iam_instance_profile.default.id}"
-  security_groups      = "${var.security_groups}"
-  subnets              = "${var.subnets}"
-  key_name             = "${var.key_name}"
-  cluster_name         = "${var.cluster_name}"
-  user_data            = "${data.template_file.ecs_user_data.rendered}"
-  min_size             = "${var.min_size}"
-  max_size             = "${var.max_size}"
+
+resource "aws_autoscaling_group" "default" {
+  launch_configuration = "${aws_launch_configuration.default.id}"
+  max_size             = "${var.min_size}"
+  min_size             = "${var.max_size}"
+  availability_zones   = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  vpc_zone_identifier  = ["${var.subnets}"]
+}
+
+resource "aws_launch_configuration" "default" {
+  image_id      = "${data.aws_ami.ecs.image_id}"
+  instance_type = "${var.instance_type}"
+
+  iam_instance_profile = "${aws_iam_instance_profile.default.name}"
+
+  key_name = "${var.key_name}"
+
+  security_groups = ["${var.security_groups}"]
+
+  user_data = "${data.template_file.ecs_user_data.rendered}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
