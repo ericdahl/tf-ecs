@@ -17,3 +17,7 @@ variable "subnets" {
 variable "cluster_name" {}
 
 variable "user_data" {}
+
+variable "min_size" {}
+
+variable "max_size" {}

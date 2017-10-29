@@ -38,4 +38,6 @@ module "ecs_asg" {
   key_name             = "${var.key_name}"
   cluster_name         = "${var.cluster_name}"
   user_data            = "${data.template_file.ecs_user_data.rendered}"
+  min_size             = "${var.min_size}"
+  max_size             = "${var.max_size}"
 }

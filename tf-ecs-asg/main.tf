@@ -4,8 +4,8 @@ provider "aws" {
 
 resource "aws_autoscaling_group" "default" {
   launch_configuration = "${aws_launch_configuration.default.id}"
-  max_size             = 1
-  min_size             = 1
+  max_size             = "${var.min_size}"
+  min_size             = "${var.max_size}"
   availability_zones   = ["us-east-1a", "us-east-1b", "us-east-1c"]
   vpc_zone_identifier  = ["${var.subnets}"]
 }
