@@ -11,6 +11,7 @@ module "ecs" {
 
   security_groups = [
     "${module.vpc.sg_allow_egress}",
+    "${module.vpc.sg_allow_vpc}",
     "${module.vpc.sg_allow_22}",
     "${module.vpc.sg_allow_80}",
   ]
@@ -41,7 +42,7 @@ resource "aws_ecs_service" "httpbin" {
   cluster         = "tf-cluster"
   name            = "tf-cluster-httpbin"
   task_definition = "${aws_ecs_task_definition.httpbin.arn}"
-  desired_count   = "3"
+  desired_count   = "12"
 
   iam_role = "${module.ecs.iam_role_ecs_service_name}"
 
@@ -93,5 +94,7 @@ resource "aws_alb_target_group" "default" {
 
   health_check {
     healthy_threshold = 2
+    interval = 5
+    timeout = 2
   }
 }
