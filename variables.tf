@@ -1,5 +1,4 @@
 variable "cluster_name" {
-  default = "tf-cluster"
 }
 
 variable "security_groups" {
