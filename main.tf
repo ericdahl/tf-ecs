@@ -2,54 +2,54 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_ecs_cluster" "default" {
-  name = "${var.cluster_name}"
+variable "key_name" {}
+
+variable "desired_size" {
+  default = 5
 }
 
-data "aws_ami" "ecs" {
-  most_recent = true
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["*amazon-ecs-optimized*"]
-  }
+module "vpc" {
+  source = "github.com/ericdahl/tf-module-vpc"
 }
 
-data "template_file" "cloud_init" {
-  template = "${file("${path.module}/templates/cloud-init.yml")}"
+module "ecs" {
+  source = "ecs_cluster"
 
-  vars {
-    cluster_name = "${var.cluster_name}"
-  }
+  cluster_name = "tf-cluster"
+
 }
 
+module "ecs_drainer" {
+  source = "ecs_drainer"
 
-resource "aws_autoscaling_group" "default" {
-  launch_configuration = "${aws_launch_configuration.default.id}"
-  max_size             = "${var.min_size}"
-  min_size             = "${var.max_size}"
-  availability_zones   = ["us-east-1a", "us-east-1b", "us-east-1c"]
-  vpc_zone_identifier  = ["${var.subnets}"]
+  cluster_name = "${module.ecs.cluster_name}"
+
+  asg_names =  ["${module.ecs_asg.name}"]
 }
 
-resource "aws_launch_configuration" "default" {
-  image_id      = "${data.aws_ami.ecs.image_id}"
-  instance_type = "${var.instance_type}"
+module "ecs_asg" {
+  source = "ecs_asg"
 
-  iam_instance_profile = "${aws_iam_instance_profile.default.name}"
+  security_groups = [
+    "${module.vpc.sg_allow_egress}",
+    "${module.vpc.sg_allow_vpc}",
+    "${module.vpc.sg_allow_22}",
+    "${module.vpc.sg_allow_80}",
+  ]
 
   key_name = "${var.key_name}"
 
-  security_groups = ["${var.security_groups}"]
+  subnets = [
+    "${module.vpc.subnet_public1}",
+    "${module.vpc.subnet_public2}",
+    "${module.vpc.subnet_public3}",
+  ]
 
-  user_data = "${data.template_file.cloud_init.rendered}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  min_size = 1
+  desired_size = "${var.desired_size}"
+  max_size = 5
+  ami_id = "${module.ecs.ami_id}"
+  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
+  name = "ecs-asg"
+  user_data = "${module.ecs.user-data}"
 }

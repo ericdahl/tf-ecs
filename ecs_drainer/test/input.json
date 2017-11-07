@@ -1,0 +1,22 @@
+{
+  "Records": [
+    {
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1:689973912904:asg-drainer:02f9970a-9a91-4f69-ad59-6134996f9ee7",
+      "EventSource": "aws:sns",
+      "Sns": {
+        "SignatureVersion": "1",
+        "Timestamp": "2017-11-07T20:53:06.853Z",
+        "Signature": "JYR1Zk0DyvgXra/PXyvk5hyCzjzwR9sLQrg0sSx4k9+WlYDf2nMwr16Bh0ucD850BZDl6EPWcGlIAshXuab5c+lTnQrPX5IMLQOOvmcYPgjgzScjxQmQPcjo4bfjRinnnuXlYIVSgmlJYMmsI104x+NB1uE1z7uEE7tNsZ8GyAFPFHYbLwQu36O46FDN4POohXqB1vGyAdGxCofhxW2R/ix2hH5+bNLgaoQY71oJZwf0e+DILPBE78LldJlhl4I5byeJPwuMmCwbrCk1bHePznXmC9pS/H2fvXPOV1VbK+2x6fuZNVhhEIYw87xd5jvLXNTEmlncAH4Le1N8YVRoag==",
+        "SigningCertUrl": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-433026a4050d206028891664da859041.pem",
+        "MessageId": "ca90a4e9-8ed5-5671-b91c-f69591a715dd",
+        "Message": "{\"LifecycleHookName\":\"asg-term-hook\",\"AccountId\":\"689973912904\",\"RequestId\":\"7c9b9e1a-3198-4634-952d-44f1d6e9cfbe\",\"LifecycleTransition\":\"autoscaling:EC2_INSTANCE_TERMINATING\",\"AutoScalingGroupName\":\"ecs-asg\",\"Service\":\"AWS Auto Scaling\",\"Time\":\"2017-11-07T20:53:06.832Z\",\"EC2InstanceId\":\"i-01fb76f815cbcd1e5\",\"LifecycleActionToken\":\"89fba588-28bc-4aca-9dd5-f0555f76f60a\"}",
+        "MessageAttributes": {},
+        "Type": "Notification",
+        "UnsubscribeUrl": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:689973912904:asg-drainer:02f9970a-9a91-4f69-ad59-6134996f9ee7",
+        "TopicArn": "arn:aws:sns:us-east-1:689973912904:asg-drainer",
+        "Subject": "Auto Scaling:  Lifecycle action 'TERMINATING' for instance i-0a6924a0a7d1eb01b in progress."
+      }
+    }
+  ]
+}

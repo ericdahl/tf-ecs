@@ -1,34 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
-variable "key_name" {}
-
-module "ecs" {
-  source = "../"
-
-  cluster_name = "tf-cluster"
-
-  security_groups = [
-    "${module.vpc.sg_allow_egress}",
-    "${module.vpc.sg_allow_vpc}",
-    "${module.vpc.sg_allow_22}",
-    "${module.vpc.sg_allow_80}",
-  ]
-
-  key_name = "${var.key_name}"
-
-  subnets = [
-    "${module.vpc.subnet_public1}",
-    "${module.vpc.subnet_public2}",
-    "${module.vpc.subnet_public3}",
-  ]
-}
-
-module "vpc" {
-  source = "github.com/ericdahl/tf-module-vpc"
-}
-
 data "template_file" "httpbin" {
   template = "${file("templates/tasks/httpbin.json")}"
 }
@@ -46,6 +15,9 @@ resource "aws_ecs_service" "httpbin" {
 
   iam_role = "${module.ecs.iam_role_ecs_service_name}"
 
+  # to avoid possible race condition error on creation
+  depends_on = ["aws_alb.default"]
+
   placement_strategy {
     type  = "spread"
     field = "attribute:ecs.availability-zone"
@@ -62,6 +34,8 @@ resource "aws_ecs_service" "httpbin" {
     container_port   = 8080
   }
 }
+
+
 
 resource "aws_alb" "default" {
   subnets = [
