@@ -5,7 +5,11 @@ provider "aws" {
 variable "key_name" {}
 
 variable "desired_size" {
-  default = 5
+  default = 3
+}
+
+variable "admin_cidr" {
+  default = "0.0.0.0/0"
 }
 
 module "vpc" {
@@ -16,7 +20,6 @@ module "ecs" {
   source = "ecs_cluster"
 
   cluster_name = "tf-cluster"
-
 }
 
 module "ecs_drainer" {
@@ -27,6 +30,9 @@ module "ecs_drainer" {
   asg_names =  ["${module.ecs_asg.name}"]
 }
 
+
+
+
 module "ecs_asg" {
   source = "ecs_asg"
 
@@ -35,6 +41,7 @@ module "ecs_asg" {
     "${module.vpc.sg_allow_vpc}",
     "${module.vpc.sg_allow_22}",
     "${module.vpc.sg_allow_80}",
+    "${aws_security_group.allow_2376.id}"
   ]
 
   key_name = "${var.key_name}"
@@ -52,4 +59,17 @@ module "ecs_asg" {
   instance_profile_name = "${module.ecs.iam_instance_profile_name}"
   name = "ecs-asg"
   user_data = "${module.ecs.user-data}"
+}
+
+resource "aws_security_group" "allow_2376" {
+  vpc_id = "${module.vpc.vpc_id}"
+}
+
+resource "aws_security_group_rule" "allow_2376" {
+  security_group_id = "${aws_security_group.allow_2376.id}"
+  from_port = 2376
+  protocol = "tcp"
+  to_port = 2376
+  type = "ingress"
+  cidr_blocks = ["${var.admin_cidr}"]
 }
