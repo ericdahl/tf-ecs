@@ -1,5 +1,6 @@
 resource "aws_iam_role" "ec2_role" {
-  name = "tf-ecs-example-instance-role"
+  name = "${var.cluster_name}-instance-role"
+  description = "Role applied to ECS container instances - EC2 hosts - allowing them to register themselves, pull images from ECR, etc."
 
   assume_role_policy = <<EOF
 {
@@ -29,8 +30,11 @@ resource "aws_iam_instance_profile" "default" {
   role = "${aws_iam_role.ec2_role.name}"
 }
 
+
+
 resource "aws_iam_role" "ecs_service" {
-  name = "tf-ecs-example-service-role"
+  name = "${var.cluster_name}-service-role"
+  description = "Role applied to ECS Services, allowing them to register in ELB/ALB, etc"
 
   assume_role_policy = <<EOF
 {
@@ -55,92 +59,3 @@ resource "aws_iam_policy_attachment" "ecs_service" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 
-//resource "aws_iam_role_policy" "test_policy" {
-//  name = "test_policy"
-//  role = "${aws_iam_role.asg_lambda.id}"
-//
-//  policy = <<EOF
-//{
-//  "Version": "2012-10-17",
-//  "Statement": [
-//    {
-//      "Action": [
-//          "autoscaling:CompleteLifecycleAction",
-//          "logs:CreateLogGroup",
-//          "logs:CreateLogStream",
-//          "logs:PutLogEvents",
-//          "ec2:DescribeInstances",
-//          "ec2:DescribeInstanceAttribute",
-//          "ec2:DescribeInstanceStatus",
-//          "ec2:DescribeHosts",
-//          "ecs:ListContainerInstances",
-//          "ecs:SubmitContainerStateChange",
-//          "ecs:SubmitTaskStateChange",
-//          "ecs:DescribeContainerInstances",
-//          "ecs:UpdateContainerInstancesState",
-//          "ecs:ListTasks",
-//          "ecs:DescribeTasks"
-//      ],
-//      "Effect": "Allow",
-//      "Resource": "*"
-//    },
-//    {
-//      "Action": [
-//          "sns:Publish"
-//      ],
-//      "Effect": "Allow",
-//      "Resource": "arn:aws:sns:*:*:*asg-drainer"
-//    }
-//  ]
-//}
-//EOF
-//}
-
-
-//resource "aws_iam_role" "asg_lambda" {
-//  name = "asg_lambda"
-//
-//  assume_role_policy = <<EOF
-//{
-//  "Version": "2012-10-17",
-//  "Statement": [
-//    {
-//      "Action": "sts:AssumeRole",
-//      "Principal": {
-//        "Service": "lambda.amazonaws.com"
-//      },
-//      "Effect": "Allow",
-//      "Sid": ""
-//    }
-//  ]
-//}
-//EOF
-//}
-//
-//
-//
-//resource "aws_iam_role_policy_attachment" "default" {
-//  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-//  role = "${aws_iam_role.asg_lambda.name}"
-//}
-
-
-//resource "aws_iam_role_policy" "asg_hook_policy" {
-//  name = "test_policy"
-//  role = "${aws_iam_role.asg_hook.id}"
-//
-//  policy = <<EOF
-//{
-//  "Version": "2012-10-17",
-//  "Statement": [
-//    {
-//      "Action": [
-//          "sns:Publish"
-//      ],
-//      "Effect": "Allow",
-//      "Resource": "arn:aws:sns:*:*:*asg-drainer"
-//    }
-//  ]
-//}
-//EOF
-//}
