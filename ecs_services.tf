@@ -64,7 +64,7 @@ resource "aws_alb_target_group" "default" {
   vpc_id               = "${module.vpc.vpc_id}"
   port                 = 8080
   protocol             = "HTTP"
-  deregistration_delay = 1
+  deregistration_delay = 5
 
   health_check {
     # The service task needs to start up and respond to health probes in
@@ -84,9 +84,9 @@ resource "aws_alb_target_group" "default" {
     # to accept connections, even some tasks managed to get through the health check after
     # 20+ repeated failed attempts with 2/3/5.
 
-    healthy_threshold = 2
-    unhealthy_threshold = 8
-    interval = 5
+    healthy_threshold = 10
+    unhealthy_threshold = 10
+    interval = 10
     timeout = 2
   }
 }

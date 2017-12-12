@@ -2,9 +2,10 @@
   {
     "essential": true,
     "name": "httpbin",
-    "image": "kennethreitz/httpbin:latest",
-    "memory": 257,
+    "image": "ericdahl/httpbin:e249975",
+    "memory": 249,
     "environment": [
+        { "name" : "DELAY_START_CONNECT", "value" : "3" }
     ],
     "portMappings": [
       {
