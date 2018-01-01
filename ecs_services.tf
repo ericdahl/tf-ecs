@@ -84,9 +84,9 @@ resource "aws_alb_target_group" "default" {
     # to accept connections, even some tasks managed to get through the health check after
     # 20+ repeated failed attempts with 2/3/5.
 
-    healthy_threshold = 10
+    healthy_threshold = 2
     unhealthy_threshold = 10
-    interval = 10
+    interval = 5
     timeout = 2
   }
 }
