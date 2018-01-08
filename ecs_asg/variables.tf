@@ -30,3 +30,7 @@ variable "user_data" {}
 
 variable "key_name" {
 }
+
+variable "spot_price" {
+  default = ""
+}

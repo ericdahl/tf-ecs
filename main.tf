@@ -27,7 +27,10 @@ module "ecs_drainer" {
 
   cluster_name = "${module.ecs.cluster_name}"
 
-  asg_names =  ["${module.ecs_asg.name}"]
+  asg_names =  [
+    "${module.ecs_asg.name}",
+    "${module.ecs_asg_spot.name}"
+  ]
 }
 
 
@@ -60,6 +63,38 @@ module "ecs_asg" {
   name = "ecs-asg"
   user_data = "${module.ecs.user-data}"
 }
+
+
+module "ecs_asg_spot" {
+  source = "ecs_asg"
+
+  security_groups = [
+    "${module.vpc.sg_allow_egress}",
+    "${module.vpc.sg_allow_vpc}",
+    "${module.vpc.sg_allow_22}",
+    "${module.vpc.sg_allow_80}",
+    "${aws_security_group.allow_2376.id}"
+  ]
+
+  key_name = "${var.key_name}"
+
+  subnets = [
+    "${module.vpc.subnet_public1}",
+    "${module.vpc.subnet_public2}",
+    "${module.vpc.subnet_public3}",
+  ]
+
+  min_size = 1
+  desired_size = "3"
+  max_size = 5
+  instance_type = "t2.medium"
+  spot_price = "0.0135"
+  ami_id = "${module.ecs.ami_id}"
+  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
+  name = "ecs-asg-spot"
+  user_data = "${module.ecs.user-data}"
+}
+
 
 resource "aws_security_group" "allow_2376" {
   vpc_id = "${module.vpc.vpc_id}"
