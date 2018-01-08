@@ -12,6 +12,10 @@ variable "admin_cidr" {
   default = "0.0.0.0/0"
 }
 
+variable "enable_fargate" {
+  default = "true"
+}
+
 module "vpc" {
   source = "github.com/ericdahl/tf-module-vpc"
 }

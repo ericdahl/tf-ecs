@@ -3,6 +3,8 @@ data "template_file" "httpbin_fargate" {
 }
 
 resource "aws_ecs_task_definition" "httpbin_fargate" {
+  count = "${var.enable_fargate == "true" ? 1 : 0}"
+
   container_definitions = "${data.template_file.httpbin_fargate.rendered}"
   family                = "httpbin-fargate"
 
@@ -16,6 +18,8 @@ resource "aws_ecs_task_definition" "httpbin_fargate" {
 }
 
 resource "aws_ecs_service" "httpbin_fargate" {
+  count = "${var.enable_fargate == "true" ? 1 : 0}"
+
   name            = "httpbin-fargate"
   cluster         = "${module.ecs.cluster_name}"
   task_definition = "${aws_ecs_task_definition.httpbin_fargate.arn}"
@@ -44,6 +48,8 @@ resource "aws_ecs_service" "httpbin_fargate" {
 }
 
 resource "aws_alb" "httpbin_fargate" {
+  count = "${var.enable_fargate == "true" ? 1 : 0}"
+  
   name = "httpbin-fargate"
 
   subnets = [
@@ -59,7 +65,9 @@ resource "aws_alb" "httpbin_fargate" {
 }
 
 resource "aws_alb_listener" "httpbin_fargate" {
-  "default_action" {
+  count = "${var.enable_fargate == "true" ? 1 : 0}"
+
+  default_action {
     target_group_arn = "${aws_alb_target_group.httpbin_fargate.arn}"
     type             = "forward"
   }
@@ -69,6 +77,8 @@ resource "aws_alb_listener" "httpbin_fargate" {
 }
 
 resource "aws_alb_target_group" "httpbin_fargate" {
+  count = "${var.enable_fargate == "true" ? 1 : 0}"
+
   name                 = "httpbin-fargate"
   vpc_id               = "${module.vpc.vpc_id}"
   port                 = 8080
@@ -83,3 +93,4 @@ resource "aws_alb_target_group" "httpbin_fargate" {
     timeout             = 2
   }
 }
+
