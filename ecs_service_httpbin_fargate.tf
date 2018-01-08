@@ -26,23 +26,26 @@ resource "aws_ecs_service" "httpbin_fargate" {
     security_groups = [
       "${module.vpc.sg_allow_8080}",
       "${module.vpc.sg_allow_egress}",
-      "${module.vpc.sg_allow_vpc}"
+      "${module.vpc.sg_allow_vpc}",
     ]
 
     subnets = [
-      "${module.vpc.subnet_private1}"
+      "${module.vpc.subnet_private1}",
     ]
   }
 
+  depends_on = ["aws_alb.httpbin_fargate"]
+
   load_balancer {
     target_group_arn = "${aws_alb_target_group.httpbin_fargate.arn}"
-    container_name = "httpbin"
-    container_port = 8080
+    container_name   = "httpbin"
+    container_port   = 8080
   }
 }
 
-
 resource "aws_alb" "httpbin_fargate" {
+  name = "httpbin-fargate"
+
   subnets = [
     "${module.vpc.subnet_public1}",
     "${module.vpc.subnet_public2}",
@@ -51,7 +54,7 @@ resource "aws_alb" "httpbin_fargate" {
 
   security_groups = [
     "${module.vpc.sg_allow_egress}",
-    "${module.vpc.sg_allow_80}"
+    "${module.vpc.sg_allow_80}",
   ]
 }
 
@@ -66,6 +69,7 @@ resource "aws_alb_listener" "httpbin_fargate" {
 }
 
 resource "aws_alb_target_group" "httpbin_fargate" {
+  name                 = "httpbin-fargate"
   vpc_id               = "${module.vpc.vpc_id}"
   port                 = 8080
   protocol             = "HTTP"
@@ -73,10 +77,9 @@ resource "aws_alb_target_group" "httpbin_fargate" {
   target_type          = "ip"
 
   health_check {
-    healthy_threshold = 2
+    healthy_threshold   = 2
     unhealthy_threshold = 10
-    interval = 5
-    timeout = 2
+    interval            = 5
+    timeout             = 2
   }
 }
-

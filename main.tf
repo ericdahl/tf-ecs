@@ -55,7 +55,7 @@ module "ecs_asg" {
     "${module.vpc.subnet_public3}",
   ]
 
-  min_size = 1
+  min_size = 0
   desired_size = "${var.desired_size}"
   max_size = 5
   ami_id = "${module.ecs.ami_id}"
