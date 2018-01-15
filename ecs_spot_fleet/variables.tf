@@ -1,25 +1,17 @@
-variable "min_size" {
-  default = 0
-}
-
-variable "max_size" {
-  default = 5
-}
-
-variable "desired_size" {
-  default = 3
+variable "name" {
+  default = "ecs_spot_fleet"
 }
 
 variable "subnets" {
   type = "list"
 }
 
-variable "name" {}
+variable "valid_until" {}
 
 variable "ami_id" {}
 
 variable "instance_type" {
-  default = "t2.small"
+  default = "t2.large"
 }
 
 variable "instance_profile_name" {}
@@ -32,6 +24,8 @@ variable "user_data" {}
 
 variable "key_name" {}
 
-variable "spot_price" {
-  default = ""
+variable "spot_price" {}
+
+variable "target_capacity" {
+  default = 3
 }

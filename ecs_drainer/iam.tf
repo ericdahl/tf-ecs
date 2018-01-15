@@ -1,5 +1,3 @@
-
-
 resource "aws_iam_role" "asg_lambda" {
   name = "asg_lambda"
 
@@ -20,12 +18,10 @@ resource "aws_iam_role" "asg_lambda" {
 EOF
 }
 
-
 resource "aws_iam_role_policy_attachment" "default" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-  role = "${aws_iam_role.asg_lambda.name}"
+  role       = "${aws_iam_role.asg_lambda.name}"
 }
-
 
 resource "aws_iam_role_policy" "test_policy" {
   name = "test_policy"
@@ -67,7 +63,6 @@ resource "aws_iam_role_policy" "test_policy" {
 }
 EOF
 }
-
 
 resource "aws_iam_role" "asg_hook" {
   name = "asg_hook"

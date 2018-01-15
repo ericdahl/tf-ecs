@@ -49,7 +49,7 @@ resource "aws_ecs_service" "httpbin_fargate" {
 
 resource "aws_alb" "httpbin_fargate" {
   count = "${var.enable_fargate == "true" ? 1 : 0}"
-  
+
   name = "httpbin-fargate"
 
   subnets = [
@@ -93,4 +93,3 @@ resource "aws_alb_target_group" "httpbin_fargate" {
     timeout             = 2
   }
 }
-

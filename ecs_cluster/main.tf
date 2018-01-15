@@ -27,8 +27,3 @@ data "template_file" "cloud_init" {
     cluster_name = "${var.cluster_name}"
   }
 }
-
-
-
-
-

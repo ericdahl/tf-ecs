@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ec2_role" {
-  name = "${var.cluster_name}-instance-role"
+  name        = "${var.cluster_name}-instance-role"
   description = "Role applied to ECS container instances - EC2 hosts - allowing them to register themselves, pull images from ECR, etc."
 
   assume_role_policy = <<EOF
@@ -30,10 +30,8 @@ resource "aws_iam_instance_profile" "default" {
   role = "${aws_iam_role.ec2_role.name}"
 }
 
-
-
 resource "aws_iam_role" "ecs_service" {
-  name = "${var.cluster_name}-service-role"
+  name        = "${var.cluster_name}-service-role"
   description = "Role applied to ECS Services, allowing them to register in ELB/ALB, etc"
 
   assume_role_policy = <<EOF
@@ -58,4 +56,3 @@ resource "aws_iam_policy_attachment" "ecs_service" {
   roles      = ["${aws_iam_role.ecs_service.name}"]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
-
