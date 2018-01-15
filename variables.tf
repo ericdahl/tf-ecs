@@ -9,7 +9,7 @@ variable "admin_cidr" {
 }
 
 variable "enable_fargate" {
-  default = "true"
+  default = "false"
 }
 
 variable "ecs_asg_desired_size" {

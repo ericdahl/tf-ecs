@@ -29,3 +29,7 @@ variable "spot_price" {}
 variable "target_capacity" {
   default = 3
 }
+
+variable "allocation_strategy" {
+  default = "diversified"
+}
