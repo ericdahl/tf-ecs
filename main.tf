@@ -3,7 +3,8 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "github.com/ericdahl/tf-module-vpc"
+  source = "github.com/ericdahl/tf-vpc"
+  admin_ip_cidr = "${var.admin_cidr}"
 }
 
 module "ecs" {
@@ -38,9 +39,9 @@ module "ecs_asg" {
   key_name = "${var.key_name}"
 
   subnets = [
-    "${module.vpc.subnet_public1}",
-    "${module.vpc.subnet_public2}",
-    "${module.vpc.subnet_public3}",
+    "${module.vpc.subnet_private1}",
+    "${module.vpc.subnet_private2}",
+    "${module.vpc.subnet_private3}",
   ]
 
   desired_size          = "${var.ecs_asg_desired_size}"
@@ -64,9 +65,9 @@ module "ecs_asg_spot" {
   key_name = "${var.key_name}"
 
   subnets = [
-    "${module.vpc.subnet_public1}",
-    "${module.vpc.subnet_public2}",
-    "${module.vpc.subnet_public3}",
+    "${module.vpc.subnet_private1}",
+    "${module.vpc.subnet_private2}",
+    "${module.vpc.subnet_private3}",
   ]
 
   desired_size          = "${var.ecs_asg_spot_desired_size}"
@@ -92,9 +93,9 @@ module "ecs_spot_fleet" {
   key_name = "${var.key_name}"
 
   subnets = [
-    "${module.vpc.subnet_public1}",
-    "${module.vpc.subnet_public2}",
-    "${module.vpc.subnet_public3}",
+    "${module.vpc.subnet_private1}",
+    "${module.vpc.subnet_private2}",
+    "${module.vpc.subnet_private3}",
   ]
 
   ami_id = "${module.ecs.ami_id}"
@@ -120,4 +121,46 @@ resource "aws_security_group_rule" "allow_2376" {
   to_port           = 2376
   type              = "ingress"
   cidr_blocks       = ["${var.admin_cidr}"]
+}
+
+data "aws_ami" "freebsd_11" {
+  most_recent = true
+
+  filter {
+    name = "owner-id"
+
+    values = [
+      "118940168514",
+    ]
+  }
+
+  filter {
+    name = "name"
+
+    values = [
+      "FreeBSD 11.1-STABLE-amd64*",
+    ]
+  }
+}
+
+resource "aws_instance" "jumphost" {
+  ami = "${data.aws_ami.freebsd_11.image_id}"
+  instance_type = "t2.small"
+  subnet_id     = "${module.vpc.subnet_public1}"
+  vpc_security_group_ids = ["${module.vpc.sg_allow_22}", "${module.vpc.sg_allow_egress}"]
+  key_name = "${var.key_name}"
+
+  user_data = <<EOF
+#!/usr/bin/env sh
+
+export ASSUME_ALWAYS_YES=YES
+
+pkg update -y
+pkg install -y bash
+chsh -s /usr/local/bin/bash ec2-user
+EOF
+
+  tags {
+    Name = "jumphost"
+  }
 }
