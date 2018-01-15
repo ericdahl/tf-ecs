@@ -10,6 +10,8 @@ variable "valid_until" {}
 
 variable "ami_id" {}
 
+variable "iam_fleet_role_arn" {}
+
 variable "instance_type" {
   default = "t2.large"
 }

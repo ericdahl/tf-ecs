@@ -106,6 +106,7 @@ module "ecs_spot_fleet" {
   instance_type         = "t2.large"
   spot_price            = "0.0928"
   valid_until           = "2018-07-01T00:00:00Z"
+  iam_fleet_role_arn    = "${module.ecs.iam_role_fleet_arn}"
 }
 
 resource "aws_security_group" "allow_2376" {
