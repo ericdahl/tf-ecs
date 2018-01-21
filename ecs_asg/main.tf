@@ -1,4 +1,6 @@
 resource "aws_autoscaling_group" "default" {
+  name = "${var.name}"
+
   launch_configuration = "${aws_launch_configuration.default.id}"
   min_size             = "${var.min_size}"
   max_size             = "${var.max_size}"
@@ -14,16 +16,19 @@ resource "aws_autoscaling_group" "default" {
     "${var.subnets}",
   ]
 
-  name = "${var.name}"
-
   tag {
     key                 = "Name"
     value               = "${var.name}"
     propagate_at_launch = true
   }
+
+  lifecycle {
+    ignore_changes = ["desired_capacity"]
+  }
 }
 
 resource "aws_launch_configuration" "default" {
+  name_prefix = "${var.name}-"
   image_id      = "${var.ami_id}"
   instance_type = "${var.instance_type}"
 
@@ -41,4 +46,18 @@ resource "aws_launch_configuration" "default" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_autoscaling_policy" "scale_up" {
+  name                   = "${var.name}_scale_up"
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
+}
+
+resource "aws_autoscaling_policy" "scale_down" {
+  name                   = "${var.name}_scale_down"
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
+  autoscaling_group_name = "${aws_autoscaling_group.default.name}"
 }

@@ -21,5 +21,5 @@ variable "ecs_asg_spot_desired_size" {
 }
 
 variable "ecs_spot_fleet_desired_size" {
-  default = 5
+  default = 3
 }

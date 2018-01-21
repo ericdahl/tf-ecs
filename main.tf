@@ -104,11 +104,30 @@ module "ecs_spot_fleet" {
 
   user_data             = "${module.ecs.user-data}"
   instance_profile_name = "${module.ecs.iam_instance_profile_name}"
-  instance_type         = "t2.large"
+  instance_type         = "t2.medium"
   spot_price            = "0.0928"
   valid_until           = "2018-07-01T00:00:00Z"
   iam_fleet_role_arn    = "${module.ecs.iam_role_fleet_arn}"
 }
+
+
+module "ecs_autoscaling" {
+  source = "ecs_autoscaling"
+  cluster_name = "${module.ecs.cluster_name}"
+
+  scale_up_actions = [
+    "${module.ecs_asg.asg_scale_up_arn}",
+    "${module.ecs_asg_spot.asg_scale_up_arn}",
+    "${module.ecs_spot_fleet.fleet_scale_up_arn}"
+  ]
+
+  scale_down_actions = [
+    "${module.ecs_asg.asg_scale_down_arn}",
+    "${module.ecs_asg_spot.asg_scale_down_arn}",
+    "${module.ecs_spot_fleet.fleet_scale_down_arn}"
+  ]
+}
+
 
 resource "aws_security_group" "allow_2376" {
   vpc_id = "${module.vpc.vpc_id}"

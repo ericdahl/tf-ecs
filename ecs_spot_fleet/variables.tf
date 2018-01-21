@@ -32,6 +32,14 @@ variable "target_capacity" {
   default = 3
 }
 
+variable "min_size" {
+  default = 0
+}
+
+variable "max_size" {
+  default = 5
+}
+
 variable "allocation_strategy" {
   default = "diversified"
 }
