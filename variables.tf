@@ -12,6 +12,14 @@ variable "enable_fargate" {
   default = "false"
 }
 
+variable "enable_signalfx" {
+  default = "false"
+}
+
+variable "signalfx_api_key" {
+  default = ""
+}
+
 variable "ecs_asg_desired_size" {
   default = 0
 }

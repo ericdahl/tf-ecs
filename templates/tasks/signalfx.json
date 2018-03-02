@@ -1,0 +1,35 @@
+[
+  {
+    "essential": true,
+    "name": "signalfx",
+    "image": "quay.io/signalfuse/collectd",
+    "memory": 128,
+    "environment": [
+      {
+        "name": "SF_API_TOKEN",
+        "value": "${api_key}"
+      },
+      {
+        "name": "USE_AWS_UNIQUE_ID_AS_HOSTNAME",
+        "value": "true"
+      }
+    ],
+    "portMappings": [
+    ],
+    "networkMode": "host",
+    "privileged": true,
+    "volumesFrom": [],
+    "links": [],
+    "mountPoints": [
+      {
+        "sourceVolume": "root",
+        "containerPath": "/hostfs",
+        "readOnly": true
+      },
+      {
+        "sourceVolume": "docker",
+        "containerPath": "/var/run/docker.sock"
+      }
+    ]
+  }
+]
