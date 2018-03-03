@@ -1,9 +1,9 @@
 resource "aws_spot_fleet_request" "default" {
-  iam_fleet_role  = "${var.iam_fleet_role_arn}"
-  spot_price      = "${var.spot_price}"
-  target_capacity = "${var.target_capacity}"
-  valid_until     = "${var.valid_until}"
-  allocation_strategy = "${var.allocation_strategy}" # TODO: one fleet request per AZ ..?
+  iam_fleet_role                      = "${var.iam_fleet_role_arn}"
+  spot_price                          = "${var.spot_price}"
+  target_capacity                     = "${var.target_capacity}"
+  valid_until                         = "${var.valid_until}"
+  allocation_strategy                 = "${var.allocation_strategy}" # TODO: one fleet request per AZ ..?
   terminate_instances_with_expiration = true
 
   launch_specification {
@@ -57,7 +57,6 @@ data "aws_iam_role" "iam_role_autoscale_fleet" {
   name = "AWSServiceRoleForApplicationAutoScaling_EC2SpotFleetRequest"
 }
 
-
 resource "aws_appautoscaling_target" "default" {
   max_capacity       = "${var.max_size}"
   min_capacity       = "${var.min_size}"
@@ -73,7 +72,7 @@ resource "aws_appautoscaling_policy" "scale_down" {
   name = "${var.name}_scale_down"
 
   scalable_dimension = "ec2:spot-fleet-request:TargetCapacity"
-  service_namespace = "ec2"
+  service_namespace  = "ec2"
   resource_id        = "spot-fleet-request/${aws_spot_fleet_request.default.id}"
 
   step_scaling_policy_configuration {
@@ -93,7 +92,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
   name = "${var.name}_scale_up"
 
   scalable_dimension = "ec2:spot-fleet-request:TargetCapacity"
-  service_namespace = "ec2"
+  service_namespace  = "ec2"
   resource_id        = "spot-fleet-request/${aws_spot_fleet_request.default.id}"
 
   step_scaling_policy_configuration {
@@ -108,6 +107,3 @@ resource "aws_appautoscaling_policy" "scale_up" {
 
   depends_on = ["aws_appautoscaling_target.default"]
 }
-
-
-

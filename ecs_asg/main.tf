@@ -22,13 +22,13 @@ resource "aws_autoscaling_group" "default" {
     propagate_at_launch = true
   }
 
-//  lifecycle {
-//    ignore_changes = ["desired_capacity"]
-//  }
+  //  lifecycle {
+  //    ignore_changes = ["desired_capacity"]
+  //  }
 }
 
 resource "aws_launch_configuration" "default" {
-  name_prefix = "${var.name}-"
+  name_prefix   = "${var.name}-"
   image_id      = "${var.ami_id}"
   instance_type = "${var.instance_type}"
 

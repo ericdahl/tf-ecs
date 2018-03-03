@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "vpc" {
-  source = "github.com/ericdahl/tf-vpc"
+  source        = "github.com/ericdahl/tf-vpc"
   admin_ip_cidr = "${var.admin_cidr}"
 }
 
@@ -110,24 +110,22 @@ module "ecs_spot_fleet" {
   iam_fleet_role_arn    = "${module.ecs.iam_role_fleet_arn}"
 }
 
-
 module "ecs_autoscaling" {
-  source = "ecs_autoscaling"
+  source       = "ecs_autoscaling"
   cluster_name = "${module.ecs.cluster_name}"
 
   scale_up_actions = [
     "${module.ecs_asg.asg_scale_up_arn}",
     "${module.ecs_asg_spot.asg_scale_up_arn}",
-    "${module.ecs_spot_fleet.fleet_scale_up_arn}"
+    "${module.ecs_spot_fleet.fleet_scale_up_arn}",
   ]
 
   scale_down_actions = [
     "${module.ecs_asg.asg_scale_down_arn}",
     "${module.ecs_asg_spot.asg_scale_down_arn}",
-    "${module.ecs_spot_fleet.fleet_scale_down_arn}"
+    "${module.ecs_spot_fleet.fleet_scale_down_arn}",
   ]
 }
-
 
 resource "aws_security_group" "allow_2376" {
   vpc_id = "${module.vpc.vpc_id}"
@@ -163,11 +161,11 @@ data "aws_ami" "freebsd_11" {
 }
 
 resource "aws_instance" "jumphost" {
-  ami = "${data.aws_ami.freebsd_11.image_id}"
-  instance_type = "t2.small"
-  subnet_id     = "${module.vpc.subnet_public1}"
+  ami                    = "${data.aws_ami.freebsd_11.image_id}"
+  instance_type          = "t2.small"
+  subnet_id              = "${module.vpc.subnet_public1}"
   vpc_security_group_ids = ["${module.vpc.sg_allow_22}", "${module.vpc.sg_allow_egress}"]
-  key_name = "${var.key_name}"
+  key_name               = "${var.key_name}"
 
   user_data = <<EOF
 #!/usr/bin/env sh

@@ -57,7 +57,6 @@ resource "aws_iam_policy_attachment" "ecs_service" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 
-
 resource "aws_iam_role" "fleet" {
   name = "iam_fleet_role"
 
