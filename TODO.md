@@ -1,3 +1,2 @@
 - spot instance termination monitor
-- private IP & jumphost
 - balance spot across AZs
