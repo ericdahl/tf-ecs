@@ -71,6 +71,8 @@ module "ecs_asg_spot" {
   ]
 
   desired_size          = "${var.ecs_asg_spot_desired_size}"
+  min_size = "${var.asg_min_size}"
+  max_size = "${var.asg_max_size}"
   instance_type         = "t2.medium"
   spot_price            = "0.0464"
   ami_id                = "${module.ecs.ami_id}"

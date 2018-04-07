@@ -1,2 +1,3 @@
 - spot instance termination monitor
 - balance spot across AZs
+- config flag to disable autoscaling

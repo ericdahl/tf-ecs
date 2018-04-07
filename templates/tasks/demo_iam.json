@@ -1,0 +1,20 @@
+[
+  {
+    "essential": true,
+    "name": "httpbin",
+    "image": "ericdahl/httpbin:e249975",
+    "memory": 256,
+    "environment": [
+    ],
+    "portMappings": [
+      {
+        "hostPort": 0,
+        "containerPort": 8080,
+        "protocol": "tcp"
+      }
+    ],
+    "volumesFrom": [],
+    "links": [],
+    "mountPoints": []
+  }
+]
