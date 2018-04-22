@@ -1,13 +1,20 @@
 data "template_file" "httpbin" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
   template = "${file("templates/tasks/httpbin.json")}"
 }
 
 resource "aws_ecs_task_definition" "httpbin" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
+
   container_definitions = "${data.template_file.httpbin.rendered}"
   family                = "httpbin"
 }
 
 resource "aws_ecs_service" "httpbin" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
   cluster         = "tf-cluster"
   name            = "tf-cluster-httpbin"
   task_definition = "${aws_ecs_task_definition.httpbin.arn}"
@@ -36,6 +43,8 @@ resource "aws_ecs_service" "httpbin" {
 }
 
 resource "aws_alb" "default" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
   name = "httpbin-ec2"
 
   subnets = [
@@ -51,6 +60,8 @@ resource "aws_alb" "default" {
 }
 
 resource "aws_alb_listener" "default" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
   "default_action" {
     target_group_arn = "${aws_alb_target_group.default.arn}"
     type             = "forward"
@@ -61,6 +72,8 @@ resource "aws_alb_listener" "default" {
 }
 
 resource "aws_alb_target_group" "default" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
   name                 = "httpbin-ec2"
   vpc_id               = "${module.vpc.vpc_id}"
   port                 = 8080

@@ -51,5 +51,5 @@ variable "enable_demo_iam" {
 }
 
 variable "enable_httpbin_ec2" {
-  default = "false"
+  default = "true"
 }
