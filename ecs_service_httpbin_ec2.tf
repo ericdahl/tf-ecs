@@ -27,7 +27,7 @@ resource "aws_ecs_service" "httpbin" {
   iam_role = "${module.ecs.iam_role_ecs_service_name}"
 
   # to avoid possible race condition error on creation
-  depends_on = ["aws_alb.default"]
+  depends_on = ["aws_alb.ecs_service_httpbin"]
 
 
   ordered_placement_strategy {
@@ -52,7 +52,7 @@ resource "aws_ecs_service" "httpbin" {
   health_check_grace_period_seconds = 300
 }
 
-resource "aws_alb" "default" {
+resource "aws_alb" "ecs_service_httpbin" {
   count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
 
   name = "httpbin-ec2"
@@ -77,7 +77,7 @@ resource "aws_alb_listener" "default" {
     type             = "forward"
   }
 
-  load_balancer_arn = "${aws_alb.default.arn}"
+  load_balancer_arn = "${aws_alb.ecs_service_httpbin.arn}"
   port              = 80
 }
 
@@ -141,7 +141,7 @@ resource "aws_appautoscaling_policy" "ecs_service_httpbin_target_tracking" {
 
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label = "${aws_alb.default.arn_suffix}/${aws_alb_target_group.default.arn_suffix}"
+      resource_label = "${aws_alb.ecs_service_httpbin.arn_suffix}/${aws_alb_target_group.default.arn_suffix}"
     }
   }
 
