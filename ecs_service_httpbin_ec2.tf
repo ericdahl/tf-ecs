@@ -29,12 +29,13 @@ resource "aws_ecs_service" "httpbin" {
   # to avoid possible race condition error on creation
   depends_on = ["aws_alb.default"]
 
-  placement_strategy {
+
+  ordered_placement_strategy {
     type  = "spread"
     field = "attribute:ecs.availability-zone"
   }
 
-  placement_strategy {
+  ordered_placement_strategy {
     type  = "spread"
     field = "instanceId"
   }
@@ -112,4 +113,37 @@ resource "aws_alb_target_group" "default" {
     interval            = 5
     timeout             = 2
   }
+}
+
+resource "aws_appautoscaling_target" "ecs_service_httpbin" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
+  max_capacity       = 30
+  min_capacity       = 1
+  resource_id        = "service/${module.ecs.cluster_name}/${aws_ecs_service.httpbin.name}"
+  role_arn           = "arn:aws:iam::689973912904:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+
+resource "aws_appautoscaling_policy" "ecs_service_httpbin_target_tracking" {
+  count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
+
+  name                    = "ecs_service_httpbin_target_tracking"
+  policy_type             = "TargetTrackingScaling"
+  resource_id             = "${aws_appautoscaling_target.ecs_service_httpbin.resource_id}"
+  scalable_dimension      = "${aws_appautoscaling_target.ecs_service_httpbin.scalable_dimension}"
+  service_namespace       = "${aws_appautoscaling_target.ecs_service_httpbin.service_namespace}"
+
+  target_tracking_scaling_policy_configuration {
+    target_value = 30
+
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label = "${aws_alb.default.arn_suffix}/${aws_alb_target_group.default.arn_suffix}"
+    }
+  }
+
+  depends_on = ["aws_appautoscaling_target.ecs_service_httpbin"]
 }
