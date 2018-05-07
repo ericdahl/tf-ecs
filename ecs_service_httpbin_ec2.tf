@@ -81,7 +81,22 @@ resource "aws_alb_target_group" "default" {
   deregistration_delay = 5
 
   health_check {
-    # The service task needs to start up and respond to health probes in  #  # unhealthy_threshold * (interval + [0, timeout])  #  # If the probes can't connect to the target then it's immediately recorded  # as a failed health check. This would happen if the target is initializing and  # hasn't started listening on the socket.  #  # e.g.,  #   timeout = 2, unhealthy_threshold = 3, interval = 5  # The target has between 15 and 21 seconds to respond to health checks depending  # on whether it's accepting connections.  #  # This does not seem to be exact. When using a task that takes a constant 30 seconds  # to accept connections, even some tasks managed to get through the health check after  # 20+ repeated failed attempts with 2/3/5.
+    # The service task needs to start up and respond to health probes in
+    #
+    # unhealthy_threshold * (interval + [0, timeout])
+    #
+    # If the probes can't connect to the target then it's immediately recorded
+    # as a failed health check. This would happen if the target is initializing and
+    # hasn't started listening on the socket.
+    #
+    # e.g.,
+    #   timeout = 2, unhealthy_threshold = 3, interval = 5
+    # The target has between 15 and 21 seconds to respond to health checks depending
+    # on whether it's accepting connections.
+    #
+    # This does not seem to be exact. When using a task that takes a constant 30 seconds
+    # to accept connections, even some tasks managed to get through the health check after
+    # 20+ repeated failed attempts with 2/3/5.
 
     healthy_threshold   = 2
     unhealthy_threshold = 10
