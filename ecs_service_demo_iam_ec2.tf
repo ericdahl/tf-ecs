@@ -49,16 +49,6 @@ resource "aws_ecs_service" "demo_iam" {
   name            = "tf-cluster-demo_iam"
   task_definition = "${aws_ecs_task_definition.demo_iam.arn}"
   desired_count   = "1"
-
-  placement_strategy {
-    type  = "spread"
-    field = "attribute:ecs.availability-zone"
-  }
-
-  placement_strategy {
-    type  = "spread"
-    field = "instanceId"
-  }
 }
 
 resource "aws_iam_role" "demo_iam" {
