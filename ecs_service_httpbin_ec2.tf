@@ -2,6 +2,10 @@ data "template_file" "httpbin" {
   count = "${var.enable_httpbin_ec2 == "true" ? 1 : 0}"
 
   template = "${file("templates/tasks/httpbin.json")}"
+
+  vars {
+    delay_start_connect = "30"
+  }
 }
 
 resource "aws_ecs_task_definition" "httpbin" {
@@ -40,6 +44,11 @@ resource "aws_ecs_service" "httpbin" {
     container_name   = "httpbin"
     container_port   = 8080
   }
+
+  // Note: As of May 2018, this will stop a task from being
+  // killed on startup, but the ALB UnHealthyHost metric is
+  // still recorded
+  health_check_grace_period_seconds = 300
 }
 
 resource "aws_alb" "default" {

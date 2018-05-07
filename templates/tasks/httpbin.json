@@ -5,7 +5,7 @@
     "image": "ericdahl/httpbin:e249975",
     "memory": 249,
     "environment": [
-        { "name" : "DELAY_START_CONNECT", "value" : "0" }
+        { "name" : "DELAY_START_CONNECT", "value" : "${delay_start_connect}" }
     ],
     "portMappings": [
       {
