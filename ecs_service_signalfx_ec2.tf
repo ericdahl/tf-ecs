@@ -28,12 +28,8 @@ resource "aws_ecs_task_definition" "signalfx" {
 resource "aws_ecs_service" "signalfx" {
   count = "${var.enable_signalfx == "true" ? 1 : 0}"
 
-  cluster         = "tf-cluster"
-  name            = "tf-cluster-signalfx"
-  task_definition = "${aws_ecs_task_definition.signalfx.arn}"
-  desired_count   = "1000"
-
-  placement_constraints {
-    type = "distinctInstance"
-  }
+  cluster             = "tf-cluster"
+  name                = "tf-cluster-signalfx"
+  task_definition     = "${aws_ecs_task_definition.signalfx.arn}"
+  scheduling_strategy = "DAEMON"
 }
