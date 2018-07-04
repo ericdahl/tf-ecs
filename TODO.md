@@ -1,3 +1,5 @@
 - spot instance termination monitor
 - config flag to disable autoscaling
 - target tracking autoscaling
+- demo for SSM Parameter Store
+- demo for ECS Service Discovery
