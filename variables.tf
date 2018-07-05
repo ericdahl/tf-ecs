@@ -38,18 +38,25 @@ variable "ecs_spot_fleet_desired_size" {
 /*
  * Service/Feature toggles
  */
-variable "enable_fargate" {
+variable "enable_fargate_httpbin" {
   default = "false"
 }
 
-variable "enable_signalfx" {
+variable "enable_ec2_signalfx" {
   default = "false"
 }
 
-variable "enable_demo_iam" {
+variable "enable_ec2_demo_iam" {
   default = "false"
 }
 
-variable "enable_httpbin_ec2" {
+variable "enable_ec2_httpbin" {
   default = "true"
+}
+
+variable "ec2_httpbin_max_capacity" {
+  default = 30
+}
+variable "ec2_httpbin_min_capacity" {
+  default = 12
 }

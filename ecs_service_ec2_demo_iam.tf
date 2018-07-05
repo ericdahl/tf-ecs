@@ -3,13 +3,13 @@
  */
 
 data "template_file" "demo_iam" {
-  count = "${var.enable_demo_iam == "true" ? 1 : 0}"
+  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
 
   template = "${file("templates/tasks/demo_iam.json")}"
 }
 
 resource "aws_ecs_task_definition" "demo_iam" {
-  count = "${var.enable_demo_iam == "true" ? 1 : 0}"
+  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
 
   container_definitions = "${data.template_file.demo_iam.rendered}"
   family                = "demo_iam"
@@ -43,7 +43,7 @@ resource "aws_ecs_task_definition" "demo_iam" {
 }
 
 resource "aws_ecs_service" "demo_iam" {
-  count = "${var.enable_demo_iam == "true" ? 1 : 0}"
+  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
 
   cluster         = "tf-cluster"
   name            = "tf-cluster-demo_iam"
@@ -52,7 +52,7 @@ resource "aws_ecs_service" "demo_iam" {
 }
 
 resource "aws_iam_role" "demo_iam" {
-  count = "${var.enable_demo_iam == "true" ? 1 : 0}"
+  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
 
   name = "ecs_service_demo_iam"
 
@@ -74,7 +74,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "demo_iam" {
-  count = "${var.enable_demo_iam == "true" ? 1 : 0}"
+  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
 
   name = "ecs_service_demo_iam"
   role = "${aws_iam_role.demo_iam.name}"
@@ -108,7 +108,7 @@ EOF
 }
 
 resource "aws_s3_bucket" "demo_iam" {
-  count = "${var.enable_demo_iam == "true" ? 1 : 0}"
+  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
 
   bucket = "tf-demo-iam-2018"
 }
