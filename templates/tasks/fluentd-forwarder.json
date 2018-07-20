@@ -1,0 +1,21 @@
+[
+  {
+    "essential": true,
+    "name": "fluentd-forwarder",
+    "image": "ericdahl/fluentd-forwarder:1ef740d7",
+    "memory": 249,
+    "environment": [
+    ],
+    "portMappings": [
+    ],
+    "volumesFrom": [],
+    "links": [],
+    "mountPoints": [
+      {
+        "sourceVolume": "var_log",
+        "containerPath": "/host/var/log",
+        "readOnly": true
+      }
+    ]
+  }
+]

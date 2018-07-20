@@ -2,7 +2,7 @@
   {
     "essential": true,
     "name": "fluentd-aggregator",
-    "image": "ericdahl/fluentd-aggregator:3ff5b80e",
+    "image": "ericdahl/fluentd-aggregator:9e594320",
     "memory": 249,
     "environment": [
     ],

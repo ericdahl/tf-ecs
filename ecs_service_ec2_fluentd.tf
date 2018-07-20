@@ -1,13 +1,11 @@
 data "template_file" "fluentd" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
-
   template = "${file("templates/tasks/fluentd-aggregator.json")}"
 }
 
 
 resource "aws_ecs_task_definition" "fluentd" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
-
 
   container_definitions = "${data.template_file.fluentd.rendered}"
   family                = "fluentd"
@@ -32,7 +30,6 @@ resource "aws_ecs_service" "fluentd" {
     container_name   = "fluentd-aggregator"
     container_port   = 24224
   }
-
 }
 
 
@@ -48,7 +45,6 @@ resource "aws_lb" "fluentd" {
     "${module.vpc.subnet_private2}",
     "${module.vpc.subnet_private3}",
   ]
-
 }
 
 resource "aws_lb_listener" "fluentd" {
@@ -62,9 +58,7 @@ resource "aws_lb_listener" "fluentd" {
     target_group_arn = "${aws_lb_target_group.fluentd.arn}"
     type = "forward"
   }
-
 }
-
 
 resource "aws_lb_target_group" "fluentd" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
@@ -74,17 +68,35 @@ resource "aws_lb_target_group" "fluentd" {
   vpc_id = "${module.vpc.vpc_id}"
 }
 
-//
-//resource "aws_security_group" "allow_24224" {
-//  vpc_id = "${module.vpc.vpc_id}"
-//}
-//
-//resource "aws_security_group_rule" "allow_2376" {
-//  security_group_id = "${aws_security_group.allow_2376.id}"
-//  from_port         = 24224
-//  protocol          = "tcp"
-//  to_port           = 24224
-//  type              = "ingress"
-//  cidr_blocks       = ["${module.vpc.}"]
-//}
 
+///////////////////////////////////////////////////
+///
+/// Forwarder
+///
+///////////////////////////////////////////////////
+
+data "template_file" "fluentd_forwarder" {
+  count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
+  template = "${file("templates/tasks/fluentd-forwarder.json")}"
+}
+
+resource "aws_ecs_task_definition" "fluentd_forwarder" {
+  count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
+
+  container_definitions = "${data.template_file.fluentd_forwarder.rendered}"
+  family                = "fluentd-forwarder"
+
+  volume {
+    name      = "var_log"
+    host_path = "/var/log"
+  }
+}
+
+resource "aws_ecs_service" "fluentd_forwarder" {
+  count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
+
+  cluster             = "tf-cluster"
+  name                = "fluentd-forwarder"
+  task_definition     = "${aws_ecs_task_definition.fluentd_forwarder.arn}"
+  scheduling_strategy = "DAEMON"
+}
