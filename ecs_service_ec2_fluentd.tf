@@ -1,3 +1,7 @@
+# TODO:
+# dynamic fluentd aggregaor URL
+# annotate forwarder with host name/instance id
+
 data "template_file" "fluentd" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
   template = "${file("templates/tasks/fluentd-aggregator.json")}"
