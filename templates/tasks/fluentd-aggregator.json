@@ -1,0 +1,20 @@
+[
+  {
+    "essential": true,
+    "name": "fluentd-aggregator",
+    "image": "ericdahl/fluentd-aggregator:730da675",
+    "memory": 249,
+    "environment": [
+    ],
+    "portMappings": [
+      {
+        "hostPort": 0,
+        "containerPort": 24224,
+        "protocol": "tcp"
+      }
+    ],
+    "volumesFrom": [],
+    "links": [],
+    "mountPoints": []
+  }
+]

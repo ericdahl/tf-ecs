@@ -50,6 +50,10 @@ variable "enable_ec2_demo_iam" {
   default = "false"
 }
 
+variable "enable_ec2_fluentd" {
+  default = "false"
+}
+
 variable "enable_ec2_httpbin" {
   default = "true"
 }
