@@ -3,6 +3,14 @@
 repo_update: true
 repo_upgrade: all
 
+package_update: true
+
+packages:
+  - jq
+  - nc
+  - tcpdump
+  - lsof
+
 bootcmd:
   - echo ECS_CLUSTER='${cluster_name}' >> /etc/ecs/ecs.config
 
