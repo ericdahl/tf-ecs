@@ -5,3 +5,6 @@ repo_upgrade: all
 
 runcmd:
   - echo ECS_CLUSTER='${cluster_name}' >> /etc/ecs/ecs.config
+
+bootcmd:
+  - echo "INSTANCE_ID=$INSTANCE_ID" >> /etc/environment
