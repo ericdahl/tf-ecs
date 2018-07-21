@@ -2,7 +2,7 @@
   {
     "essential": true,
     "name": "fluentd-forwarder",
-    "image": "ericdahl/fluentd-forwarder:49f6ce55",
+    "image": "ericdahl/fluentd-forwarder:bf3d2eeb",
     "memory": 249,
     "environment": [
       {
@@ -19,6 +19,10 @@
         "sourceVolume": "var_log",
         "containerPath": "/host/var/log",
         "readOnly": true
+      },
+      {
+        "sourceVolume": "etc_environment",
+        "containerPath": "/etc/environment"
       }
     ]
   }

@@ -33,6 +33,10 @@ resource "aws_ecs_service" "fluentd_aggregator" {
   # to avoid possible race condition error on creation
   depends_on = ["aws_lb.fluentd_aggregator"]
 
+  ordered_placement_strategy {
+    type  = "spread"
+    field = "attribute:ecs.availability-zone"
+  }
 
   load_balancer {
     target_group_arn = "${aws_lb_target_group.fluentd_aggregator.arn}"
@@ -113,6 +117,11 @@ resource "aws_ecs_task_definition" "fluentd_forwarder" {
   volume {
     name      = "var_log"
     host_path = "/var/log"
+  }
+
+  volume {
+    name      = "etc_environment"
+    host_path = "/etc/environment"
   }
 }
 
