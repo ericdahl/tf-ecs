@@ -3,9 +3,6 @@
 repo_update: true
 repo_upgrade: all
 
-runcmd:
-  - echo ECS_CLUSTER='${cluster_name}' >> /etc/ecs/ecs.config
-
 bootcmd:
   - echo ECS_CLUSTER='${cluster_name}' >> /etc/ecs/ecs.config
 
