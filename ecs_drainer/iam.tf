@@ -23,47 +23,6 @@ resource "aws_iam_role_policy_attachment" "default" {
   role       = "${aws_iam_role.asg_lambda.name}"
 }
 
-resource "aws_iam_role_policy" "test_policy" {
-  name = "test_policy"
-  role = "${aws_iam_role.asg_lambda.id}"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-          "autoscaling:CompleteLifecycleAction",
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents",
-          "ec2:DescribeInstances",
-          "ec2:DescribeInstanceAttribute",
-          "ec2:DescribeInstanceStatus",
-          "ec2:DescribeHosts",
-          "ecs:ListContainerInstances",
-          "ecs:SubmitContainerStateChange",
-          "ecs:SubmitTaskStateChange",
-          "ecs:DescribeContainerInstances",
-          "ecs:UpdateContainerInstancesState",
-          "ecs:ListTasks",
-          "ecs:DescribeTasks"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-          "sns:Publish"
-      ],
-      "Effect": "Allow",
-      "Resource": "arn:aws:sns:*:*:*asg-drainer"
-    }
-  ]
-}
-EOF
-}
-
 resource "aws_iam_role" "asg_hook" {
   name = "asg_hook"
 
