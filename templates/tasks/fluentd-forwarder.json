@@ -2,9 +2,13 @@
   {
     "essential": true,
     "name": "fluentd-forwarder",
-    "image": "ericdahl/fluentd-forwarder:1ef740d7",
+    "image": "ericdahl/fluentd-forwarder:49f6ce55",
     "memory": 249,
     "environment": [
+      {
+        "name": "FLUENTD_AGGREGATOR_HOST",
+        "value": "${fluentd_aggregator_host}"
+      }
     ],
     "portMappings": [
     ],

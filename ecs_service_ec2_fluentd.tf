@@ -1,6 +1,11 @@
+# Findings:
+# - NLB doesn't support loopback to same instance.
+
+
 # TODO:
 # dynamic fluentd aggregaor URL
 # annotate forwarder with host name/instance id
+# issue with NLB back to self?
 
 data "template_file" "fluentd" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
@@ -8,36 +13,47 @@ data "template_file" "fluentd" {
 }
 
 
-resource "aws_ecs_task_definition" "fluentd" {
+resource "aws_ecs_task_definition" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
   container_definitions = "${data.template_file.fluentd.rendered}"
   family                = "fluentd"
 }
 
-resource "aws_ecs_service" "fluentd" {
+resource "aws_ecs_service" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
   cluster         = "tf-cluster"
   name            = "fluentd-aggregator"
-  task_definition = "${aws_ecs_task_definition.fluentd.arn}"
-  desired_count   = "1"
+  task_definition = "${aws_ecs_task_definition.fluentd_aggregator.arn}"
+  desired_count   = "2"
 
   iam_role = "${module.ecs.iam_role_ecs_service_name}"
 
   # to avoid possible race condition error on creation
-  depends_on = ["aws_lb.fluentd"]
+  depends_on = ["aws_lb.fluentd_aggregator"]
 
 
   load_balancer {
-    target_group_arn = "${aws_lb_target_group.fluentd.arn}"
+    target_group_arn = "${aws_lb_target_group.fluentd_aggregator.arn}"
     container_name   = "fluentd-aggregator"
     container_port   = 24224
   }
 }
 
 
-resource "aws_lb" "fluentd" {
+//resource "aws_elb" "fluentd_aggregator" {
+//
+//  listener {
+//
+//    instance_port = 0
+//    instance_protocol = ""
+//    lb_port = 0
+//    lb_protocol = ""
+//  }
+//}
+
+resource "aws_lb" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
   name = "fluentd"
@@ -51,20 +67,20 @@ resource "aws_lb" "fluentd" {
   ]
 }
 
-resource "aws_lb_listener" "fluentd" {
+resource "aws_lb_listener" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
-  load_balancer_arn = "${aws_lb.fluentd.arn}"
+  load_balancer_arn = "${aws_lb.fluentd_aggregator.arn}"
   port = 24224
   protocol = "TCP"
 
   default_action {
-    target_group_arn = "${aws_lb_target_group.fluentd.arn}"
+    target_group_arn = "${aws_lb_target_group.fluentd_aggregator.arn}"
     type = "forward"
   }
 }
 
-resource "aws_lb_target_group" "fluentd" {
+resource "aws_lb_target_group" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
   port = 24224
@@ -82,6 +98,10 @@ resource "aws_lb_target_group" "fluentd" {
 data "template_file" "fluentd_forwarder" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
   template = "${file("templates/tasks/fluentd-forwarder.json")}"
+
+  vars {
+    fluentd_aggregator_host = "${aws_lb.fluentd_aggregator.dns_name}"
+  }
 }
 
 resource "aws_ecs_task_definition" "fluentd_forwarder" {
@@ -103,4 +123,6 @@ resource "aws_ecs_service" "fluentd_forwarder" {
   name                = "fluentd-forwarder"
   task_definition     = "${aws_ecs_task_definition.fluentd_forwarder.arn}"
   scheduling_strategy = "DAEMON"
+
+  depends_on = ["aws_lb.fluentd_aggregator"]
 }
