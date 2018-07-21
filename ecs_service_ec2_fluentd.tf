@@ -3,9 +3,7 @@
 
 
 # TODO:
-# dynamic fluentd aggregaor URL
-# annotate forwarder with host name/instance id
-# issue with NLB back to self?
+# adjust health probe settings for faster NLB resolution on startup of forwarder?
 
 data "template_file" "fluentd" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"

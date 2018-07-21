@@ -2,7 +2,7 @@
   {
     "essential": true,
     "name": "fluentd-forwarder",
-    "image": "ericdahl/fluentd-forwarder:bf3d2eeb",
+    "image": "ericdahl/fluentd-forwarder:7f9f40b2",
     "memory": 249,
     "environment": [
       {
@@ -22,7 +22,8 @@
       },
       {
         "sourceVolume": "etc_environment",
-        "containerPath": "/etc/environment"
+        "containerPath": "/etc/environment",
+        "readOnly": true
       }
     ]
   }
