@@ -2,7 +2,7 @@
   {
     "essential": true,
     "name": "fluentd-forwarder",
-    "image": "ericdahl/fluentd-forwarder:7f9f40b2",
+    "image": "ericdahl/fluentd-forwarder:87a27a2",
     "memory": 249,
     "environment": [
       {
