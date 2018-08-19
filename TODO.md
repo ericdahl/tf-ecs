@@ -2,3 +2,4 @@
 - config flag to disable autoscaling
 - demo for SSM Parameter Store
 - demo for ECS Service Discovery
+- refactor asg step scaling to define policy within autoscaling module
