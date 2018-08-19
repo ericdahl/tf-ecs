@@ -1,6 +1,8 @@
 
 
 resource "aws_autoscaling_policy" "memory_reservation" {
+  count = "${var.memory_reservation_target >= 0 ? 1 : 0}"
+
   name                   = "ecs_autoscaling_memory"
   autoscaling_group_name = "${var.asg_name}"
 
@@ -25,6 +27,8 @@ resource "aws_autoscaling_policy" "memory_reservation" {
 
 
 resource "aws_autoscaling_policy" "cpu_reservation" {
+  count = "${var.cpu_reservation_target >= 0 ? 1 : 0}"
+
   name                   = "ecs_autoscaling_cpu"
   autoscaling_group_name = "${var.asg_name}"
 
