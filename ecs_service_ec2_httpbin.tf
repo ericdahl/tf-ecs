@@ -50,6 +50,10 @@ resource "aws_ecs_service" "httpbin" {
   // killed on startup, but the ALB UnHealthyHost metric is
   // still recorded
   health_check_grace_period_seconds = 300
+
+  lifecycle {
+    ignore_changes = ["desired_count"]
+  }
 }
 
 resource "aws_alb" "ecs_service_httpbin" {
