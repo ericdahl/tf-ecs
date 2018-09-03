@@ -2,6 +2,8 @@ variable "name" {
   default = "ecs_spot_fleet"
 }
 
+variable "cluster_name" {}
+
 variable "subnets" {
   type = "list"
 }
@@ -16,6 +18,10 @@ variable "instance_type" {
   default = "t2.large"
 }
 
+variable "spot_price" {
+  default = "0.0928"
+}
+
 variable "instance_profile_name" {}
 
 variable "security_groups" {
@@ -26,18 +32,16 @@ variable "user_data" {}
 
 variable "key_name" {}
 
-variable "spot_price" {}
-
 variable "target_capacity" {
   default = 3
 }
 
 variable "min_size" {
-  default = 0
+  default = 1
 }
 
 variable "max_size" {
-  default = 5
+  default = 20
 }
 
 variable "allocation_strategy" {

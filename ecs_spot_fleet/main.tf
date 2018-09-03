@@ -5,6 +5,7 @@ resource "aws_spot_fleet_request" "default" {
   valid_until                         = "${var.valid_until}"
   allocation_strategy                 = "${var.allocation_strategy}" # TODO: one fleet request per AZ ..?
   terminate_instances_with_expiration = true
+  replace_unhealthy_instances         = true
 
   launch_specification {
     ami                    = "${var.ami_id}"
@@ -68,40 +69,52 @@ resource "aws_appautoscaling_target" "default" {
   depends_on = ["aws_spot_fleet_request.default"]
 }
 
-resource "aws_appautoscaling_policy" "scale_down" {
-  name = "${var.name}_scale_down"
-
+resource "aws_appautoscaling_policy" "target_memory_reservation" {
+  name               = "${var.name}_memory_reservation"
   scalable_dimension = "ec2:spot-fleet-request:TargetCapacity"
   service_namespace  = "ec2"
   resource_id        = "spot-fleet-request/${aws_spot_fleet_request.default.id}"
 
-  step_scaling_policy_configuration {
-    adjustment_type         = "ChangeInCapacity"
-    metric_aggregation_type = "Average"
+  policy_type = "TargetTrackingScaling"
 
-    step_adjustment {
-      metric_interval_upper_bound = 0
-      scaling_adjustment          = -1
+  target_tracking_scaling_policy_configuration {
+    target_value = 70
+
+    customized_metric_specification {
+      dimensions {
+        name  = "ClusterName"
+        value = "${var.cluster_name}"
+      }
+
+      metric_name = "MemoryReservation"
+      namespace   = "AWS/ECS"
+      statistic   = "Average"
     }
   }
 
   depends_on = ["aws_appautoscaling_target.default"]
 }
 
-resource "aws_appautoscaling_policy" "scale_up" {
-  name = "${var.name}_scale_up"
-
+resource "aws_appautoscaling_policy" "target_cpu_reservation" {
+  name               = "${var.name}_cpu_reservation"
   scalable_dimension = "ec2:spot-fleet-request:TargetCapacity"
   service_namespace  = "ec2"
   resource_id        = "spot-fleet-request/${aws_spot_fleet_request.default.id}"
 
-  step_scaling_policy_configuration {
-    adjustment_type         = "ChangeInCapacity"
-    metric_aggregation_type = "Average"
+  policy_type = "TargetTrackingScaling"
 
-    step_adjustment {
-      metric_interval_lower_bound = 0
-      scaling_adjustment          = 1
+  target_tracking_scaling_policy_configuration {
+    target_value = 70
+
+    customized_metric_specification {
+      dimensions {
+        name  = "ClusterName"
+        value = "${var.cluster_name}"
+      }
+
+      metric_name = "CPUReservation"
+      namespace   = "AWS/ECS"
+      statistic   = "Average"
     }
   }
 

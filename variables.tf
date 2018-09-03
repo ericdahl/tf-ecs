@@ -1,6 +1,6 @@
 variable "key_name" {}
 
-variable "desired_size" {
+variable "asg_desired_size" {
   default = 3
 }
 
@@ -18,10 +18,6 @@ variable "admin_cidr" {
 
 
 
-variable "signalfx_api_key" {
-  default = ""
-}
-
 variable "ecs_asg_desired_size" {
   default = 0
 }
@@ -31,7 +27,7 @@ variable "ecs_asg_spot_desired_size" {
 }
 
 variable "ecs_spot_fleet_desired_size" {
-  default = 0
+  default = 3
 }
 
 
@@ -44,6 +40,10 @@ variable "enable_fargate_httpbin" {
 
 variable "enable_ec2_signalfx" {
   default = "false"
+}
+
+variable "signalfx_api_key" {
+  default = ""
 }
 
 variable "enable_ec2_demo_iam" {

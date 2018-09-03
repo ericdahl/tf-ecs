@@ -50,36 +50,36 @@ module "ecs" {
 //  user_data             = "${module.ecs.user-data}"
 //}
 
-module "ecs_asg_spot" {
-  source = "ecs_asg"
-  name   = "ecs-asg-spot"
-
-  security_groups = [
-    "${module.vpc.sg_allow_egress}",
-    "${module.vpc.sg_allow_vpc}",
-    "${module.vpc.sg_allow_22}",
-    "${module.vpc.sg_allow_80}",
-    "${aws_security_group.allow_2376.id}",
-  ]
-
-  key_name = "${var.key_name}"
-
-  subnets = [
-    "${module.vpc.subnet_private1}",
-    "${module.vpc.subnet_private2}",
-    "${module.vpc.subnet_private3}",
-  ]
-
-  desired_size          = "${var.ecs_asg_spot_desired_size}"
-  min_size = "${var.asg_min_size}"
-  max_size = "${var.asg_max_size}"
-  instance_type         = "t2.medium"
-  spot_price            = "0.0464"
-  ami_id                = "${module.ecs.ami_id}"
-  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
-
-  user_data = "${module.ecs.user-data}"
-}
+//module "ecs_asg_spot" {
+//  source = "ecs_asg"
+//  name   = "ecs-asg-spot"
+//
+//  security_groups = [
+//    "${module.vpc.sg_allow_egress}",
+//    "${module.vpc.sg_allow_vpc}",
+//    "${module.vpc.sg_allow_22}",
+//    "${module.vpc.sg_allow_80}",
+//    "${aws_security_group.allow_2376.id}",
+//  ]
+//
+//  key_name = "${var.key_name}"
+//
+//  subnets = [
+//    "${module.vpc.subnet_private1}",
+//    "${module.vpc.subnet_private2}",
+//    "${module.vpc.subnet_private3}",
+//  ]
+//
+//  desired_size          = "${var.ecs_asg_spot_desired_size}"
+//  min_size = "${var.asg_min_size}"
+//  max_size = "${var.asg_max_size}"
+//  instance_type         = "t2.medium"
+//  spot_price            = "0.0464"
+//  ami_id                = "${module.ecs.ami_id}"
+//  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
+//
+//  user_data = "${module.ecs.user-data}"
+//}
 //
 //module "ecs_asg_spot_2" {
 //  source = "ecs_asg"
@@ -112,12 +112,12 @@ module "ecs_asg_spot" {
 //  user_data = "${module.ecs.user-data}"
 //}
 
-module "asg_autoscale_target_tracking" {
-  source = "ecs_autoscaling_target_tracking"
-
-  asg_name = "${module.ecs_asg_spot.name}"
-  cluster_name = "${module.ecs.cluster_name}"
-}
+//module "asg_autoscale_target_tracking" {
+//  source = "ecs_autoscaling_target_tracking"
+//
+//  asg_name = "${module.ecs_asg_spot.name}"
+//  cluster_name = "${module.ecs.cluster_name}"
+//}
 
 //module "asg_autoscale_target_tracking_2" {
 //  source = "ecs_autoscaling_target_tracking"
@@ -126,36 +126,36 @@ module "asg_autoscale_target_tracking" {
 //  cluster_name = "${module.ecs.cluster_name}"
 //}
 //
-//module "ecs_spot_fleet" {
-//  source = "ecs_spot_fleet"
-//
-//  security_groups = [
-//    "${module.vpc.sg_allow_egress}",
-//    "${module.vpc.sg_allow_vpc}",
-//    "${module.vpc.sg_allow_22}",
-//    "${module.vpc.sg_allow_80}",
-//    "${aws_security_group.allow_2376.id}",
-//  ]
-//
-//  key_name = "${var.key_name}"
-//
-//  subnets = [
-//    "${module.vpc.subnet_private1}",
-//    "${module.vpc.subnet_private2}",
-//    "${module.vpc.subnet_private3}",
-//  ]
-//
-//  ami_id = "${module.ecs.ami_id}"
-//
-//  target_capacity = "${var.ecs_spot_fleet_desired_size}"
-//
-//  user_data             = "${module.ecs.user-data}"
-//  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
-//  instance_type         = "t2.medium"
-//  spot_price            = "0.0928"
-//  valid_until           = "2018-12-01T00:00:00Z"
-//  iam_fleet_role_arn    = "${module.ecs.iam_role_fleet_arn}"
-//}
+module "ecs_spot_fleet" {
+  source = "ecs_spot_fleet"
+
+  cluster_name = "${module.ecs.cluster_name}"
+
+  security_groups = [
+    "${module.vpc.sg_allow_egress}",
+    "${module.vpc.sg_allow_vpc}",
+    "${module.vpc.sg_allow_22}",
+    "${module.vpc.sg_allow_80}",
+    "${aws_security_group.allow_2376.id}",
+  ]
+
+  key_name = "${var.key_name}"
+
+  subnets = [
+    "${module.vpc.subnet_private1}",
+    "${module.vpc.subnet_private2}",
+    "${module.vpc.subnet_private3}",
+  ]
+
+  ami_id = "${module.ecs.ami_id}"
+
+  target_capacity = "${var.ecs_spot_fleet_desired_size}"
+
+  user_data             = "${module.ecs.user-data}"
+  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
+  valid_until           = "2018-12-01T00:00:00Z"
+  iam_fleet_role_arn    = "${module.ecs.iam_role_fleet_arn}"
+}
 
 //module "ecs_autoscaling" {
 //  source       = "ecs_autoscaling"
