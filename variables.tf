@@ -19,7 +19,7 @@ variable "admin_cidr" {
 
 
 variable "ecs_asg_desired_size" {
-  default = 0
+  default = 10
 }
 
 variable "ecs_asg_spot_desired_size" {

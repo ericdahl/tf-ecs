@@ -69,7 +69,10 @@ module "ecs_asg_launch_template" {
     "${module.vpc.subnet_private3}",
   ]
 
-  desired_size          = "${var.ecs_asg_desired_size}"
+  min_size = 0
+
+  desired_size          = 3
+  max_size = 30
   ami_id                = "${module.ecs.ami_id}"
   instance_profile_name = "${module.ecs.iam_instance_profile_name}"
   user_data             = "${module.ecs.user-data}"
