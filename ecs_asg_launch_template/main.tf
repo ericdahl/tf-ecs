@@ -5,12 +5,6 @@ resource "aws_autoscaling_group" "default" {
   max_size         = "${var.max_size}"
   desired_capacity = "${var.desired_size}"
 
-  availability_zones = [
-    "us-east-1a",
-    "us-east-1b",
-    "us-east-1c",
-  ]
-
   vpc_zone_identifier = [
     "${var.subnets}",
   ]
