@@ -58,6 +58,10 @@ variable "enable_ec2_httpbin" {
   default = "true"
 }
 
+variable "enable_ec2_ssm_secret" {
+  default = "false"
+}
+
 variable "ec2_httpbin_max_capacity" {
   default = 30
 }
