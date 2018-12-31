@@ -1,5 +1,3 @@
-
-
 resource "aws_autoscaling_policy" "memory_reservation" {
   count = "${var.memory_reservation_target >= 0 ? 1 : 0}"
 
@@ -24,8 +22,6 @@ resource "aws_autoscaling_policy" "memory_reservation" {
   }
 }
 
-
-
 resource "aws_autoscaling_policy" "cpu_reservation" {
   count = "${var.cpu_reservation_target >= 0 ? 1 : 0}"
 
@@ -49,4 +45,3 @@ resource "aws_autoscaling_policy" "cpu_reservation" {
     target_value = "${var.cpu_reservation_target}"
   }
 }
-

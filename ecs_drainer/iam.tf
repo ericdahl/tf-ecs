@@ -23,8 +23,6 @@ resource "aws_iam_role_policy_attachment" "default" {
   role       = "${aws_iam_role.asg_lambda.name}"
 }
 
-
-
 data "template_file" "iam_drainer_policy" {
   template = "${file("${path.module}/templates/iam_drainer_policy.json")}"
 
@@ -34,17 +32,15 @@ data "template_file" "iam_drainer_policy" {
 }
 
 resource "aws_iam_policy" "iam_drainer_policy" {
-  name        = "iam_drainer_policy"
+  name = "iam_drainer_policy"
 
   policy = "${data.template_file.iam_drainer_policy.rendered}"
 }
 
 resource "aws_iam_role_policy_attachment" "iam_drainer_policy" {
-
   policy_arn = "${aws_iam_policy.iam_drainer_policy.arn}"
-  role = "${aws_iam_role.asg_hook.arn}"
+  role       = "${aws_iam_role.asg_hook.arn}"
 }
-
 
 resource "aws_iam_role" "asg_hook" {
   name = "asg_hook"

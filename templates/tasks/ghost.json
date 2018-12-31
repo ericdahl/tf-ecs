@@ -1,0 +1,29 @@
+[
+  {
+    "essential": true,
+    "name": "ghost",
+    "image": "ghost:2",
+    "memory": 512,
+    "cpu": 128,
+    "environment": [
+      { "name" : "url", "value" : "${url}" },
+      { "name" : "database__client", "value" : "mysql" },
+      { "name" : "database__connection__host", "value" : "${database_host}" },
+      { "name" : "database__connection__port", "value" : "${database_port}" },
+      { "name" : "database__connection__user", "value" : "${database_user}" },
+      { "name" : "database__connection__password", "value" : "ghost_password" },
+      { "name" : "database__connection__database", "value" : "${database_name}" },
+      { "name" : "database__connection__ssl", "value" : "Amazon RDS" }
+    ],
+    "portMappings": [
+      {
+        "hostPort": 0,
+        "containerPort": 2368,
+        "protocol": "tcp"
+      }
+    ],
+    "volumesFrom": [],
+    "links": [],
+    "mountPoints": []
+  }
+]

@@ -1,15 +1,13 @@
 # Findings:
 # - NLB doesn't support loopback to same instance.
 
-
 # TODO:
 # adjust health probe settings for faster NLB resolution on startup of forwarder?
 
 data "template_file" "fluentd" {
-  count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
+  count    = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
   template = "${file("templates/tasks/fluentd-aggregator.json")}"
 }
-
 
 resource "aws_ecs_task_definition" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
@@ -43,7 +41,6 @@ resource "aws_ecs_service" "fluentd_aggregator" {
   }
 }
 
-
 //resource "aws_elb" "fluentd_aggregator" {
 //
 //  listener {
@@ -58,9 +55,9 @@ resource "aws_ecs_service" "fluentd_aggregator" {
 resource "aws_lb" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
-  name = "fluentd"
+  name               = "fluentd"
   load_balancer_type = "network"
-  internal = true
+  internal           = true
 
   subnets = [
     "${module.vpc.subnet_private1}",
@@ -73,23 +70,22 @@ resource "aws_lb_listener" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
   load_balancer_arn = "${aws_lb.fluentd_aggregator.arn}"
-  port = 24224
-  protocol = "TCP"
+  port              = 24224
+  protocol          = "TCP"
 
   default_action {
     target_group_arn = "${aws_lb_target_group.fluentd_aggregator.arn}"
-    type = "forward"
+    type             = "forward"
   }
 }
 
 resource "aws_lb_target_group" "fluentd_aggregator" {
   count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
 
-  port = 24224
+  port     = 24224
   protocol = "TCP"
-  vpc_id = "${module.vpc.vpc_id}"
+  vpc_id   = "${module.vpc.vpc_id}"
 }
-
 
 ///////////////////////////////////////////////////
 ///
@@ -98,7 +94,7 @@ resource "aws_lb_target_group" "fluentd_aggregator" {
 ///////////////////////////////////////////////////
 
 data "template_file" "fluentd_forwarder" {
-  count = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
+  count    = "${var.enable_ec2_fluentd == "true" ? 1 : 0}"
   template = "${file("templates/tasks/fluentd-forwarder.json")}"
 
   vars {

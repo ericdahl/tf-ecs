@@ -16,8 +16,6 @@ variable "admin_cidr" {
   default = "0.0.0.0/0"
 }
 
-
-
 variable "ecs_asg_desired_size" {
   default = 10
 }
@@ -29,7 +27,6 @@ variable "ecs_asg_spot_desired_size" {
 variable "ecs_spot_fleet_desired_size" {
   default = 3
 }
-
 
 /*
  * Service/Feature toggles
@@ -62,9 +59,14 @@ variable "enable_ec2_ssm_secret" {
   default = "false"
 }
 
+variable "enable_ec2_ghost" {
+  default = "false"
+}
+
 variable "ec2_httpbin_max_capacity" {
   default = 30
 }
+
 variable "ec2_httpbin_min_capacity" {
   default = 12
 }

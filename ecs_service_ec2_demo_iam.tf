@@ -14,7 +14,6 @@ resource "aws_ecs_task_definition" "demo_iam" {
   container_definitions = "${data.template_file.demo_iam.rendered}"
   family                = "demo_iam"
 
-
   # IAM Task role granting access to S3 list operation
   # Inside the container, AWS SDK will
   #
@@ -37,9 +36,10 @@ resource "aws_ecs_task_definition" "demo_iam" {
   # Every AWS SDK is expected to check for `$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`
   # and query it for credentials (example: https://github.com/aws/aws-sdk-ruby/blob/fd0373ea9/gems/aws-sdk-core/lib/aws-sdk-core/credential_provider_chain.rb#L86)
 
+
   # more info at https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
 
-  task_role_arn         = "${aws_iam_role.demo_iam.arn}"
+  task_role_arn = "${aws_iam_role.demo_iam.arn}"
 }
 
 resource "aws_ecs_service" "demo_iam" {
