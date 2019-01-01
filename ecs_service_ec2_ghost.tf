@@ -86,6 +86,8 @@ resource "aws_alb_target_group" "ghost" {
 }
 
 resource "aws_rds_cluster" "ghost" {
+  count = "${var.enable_ec2_ghost == "true" ? 1 : 0}"
+
   cluster_identifier = "ghost"
 
   engine         = "aurora-mysql"
@@ -103,6 +105,8 @@ resource "aws_rds_cluster" "ghost" {
 }
 
 resource "aws_rds_cluster_instance" "ghost" {
+  count = "${var.enable_ec2_ghost == "true" ? 1 : 0}"
+
   cluster_identifier = "${aws_rds_cluster.ghost.id}"
 
   engine         = "aurora-mysql"
@@ -112,6 +116,8 @@ resource "aws_rds_cluster_instance" "ghost" {
 }
 
 resource "aws_db_subnet_group" "ghost" {
+  count = "${var.enable_ec2_ghost == "true" ? 1 : 0}"
+
   subnet_ids = [
     "${module.vpc.subnet_private1}",
     "${module.vpc.subnet_private2}",
