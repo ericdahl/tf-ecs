@@ -112,7 +112,7 @@ resource "aws_rds_cluster_instance" "ghost" {
   engine         = "aurora-mysql"
   engine_version = "5.7.12"
 
-  instance_class     = "db.t2.small"
+  instance_class = "db.t2.small"
 }
 
 resource "aws_db_subnet_group" "ghost" {
