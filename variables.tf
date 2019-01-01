@@ -63,6 +63,10 @@ variable "enable_ec2_ghost" {
   default = "false"
 }
 
+variable "enable_ec2_demo_service_discovery" {
+  default = "false"
+}
+
 variable "ec2_httpbin_max_capacity" {
   default = 30
 }

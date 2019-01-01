@@ -1,3 +1,7 @@
+- service discovery
+    - update VPC attrs?
+    - demo client
+
 - asg launch template
     - parameterize
     - verify scaling behavior
