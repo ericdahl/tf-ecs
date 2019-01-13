@@ -23,6 +23,13 @@ resource "aws_ecs_service" "httpbin" {
   task_definition = "${aws_ecs_task_definition.httpbin.arn}"
   desired_count   = "12"
 
+  enable_ecs_managed_tags = "true"
+  propagate_tags          = "SERVICE"
+  tags = {
+    ServiceName = "tf-cluster-httpbin"
+    ClusterName = "tf-cluster"
+  }
+
   iam_role = "${module.ecs.iam_role_ecs_service_name}"
 
   # to avoid possible race condition error on creation

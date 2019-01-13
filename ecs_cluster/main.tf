@@ -4,6 +4,10 @@ provider "aws" {
 
 resource "aws_ecs_cluster" "default" {
   name = "${var.cluster_name}"
+
+  tags = {
+    ClusterName = "${var.cluster_name}"
+  }
 }
 
 data "aws_ami" "ecs" {
