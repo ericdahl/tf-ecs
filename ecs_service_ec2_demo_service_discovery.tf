@@ -4,7 +4,6 @@ data "template_file" "demo_service_discovery" {
   template = "${file("templates/tasks/demo_service_discovery.json")}"
 }
 
-
 resource "aws_ecs_task_definition" "demo_service_discovery" {
   count = "${var.enable_ec2_demo_service_discovery == "true" ? 1 : 0}"
 
@@ -24,12 +23,13 @@ resource "aws_ecs_service" "demo_service_discovery" {
     registry_arn = "${aws_service_discovery_service.demo_service_discovery.arn}"
 
     container_port = 8080
-    container_name= "httpbin"
+    container_name = "httpbin"
   }
 }
+
 resource "aws_service_discovery_private_dns_namespace" "demo_service_discovery" {
-  name        = "demo.int"
-  vpc         = "${module.vpc.vpc_id}"
+  name = "demo.int"
+  vpc  = "${module.vpc.vpc_id}"
 }
 
 resource "aws_service_discovery_service" "demo_service_discovery" {
@@ -44,5 +44,3 @@ resource "aws_service_discovery_service" "demo_service_discovery" {
     }
   }
 }
-
-

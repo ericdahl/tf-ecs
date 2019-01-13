@@ -25,22 +25,12 @@ resource "aws_autoscaling_group" "default" {
         launch_template_id = "${aws_launch_template.default.id}"
       }
 
-      override {
-        instance_type = "t2.small"
-      }
-
-      override {
-        instance_type = "t2.medium"
-      }
-
-      override {
-        instance_type = "t3.medium"
-      }
+      override = "${var.overrides}"
     }
 
     instances_distribution {
       # 0% means no on-demand
-      on_demand_percentage_above_base_capacity = 0
+      on_demand_percentage_above_base_capacity = "${var.on_demand_percentage_above_base_capacity}"
     }
   }
 }

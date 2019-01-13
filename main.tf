@@ -69,10 +69,30 @@ module "ecs_asg_launch_template" {
     "${module.vpc.subnet_private3}",
   ]
 
-  min_size = 0
+  instance_type = "t2.small"
 
-  desired_size          = 3
-  max_size              = 30
+  overrides = [
+    {
+      instance_type = "t2.medium"
+    },
+    {
+      instance_type = "t2.large"
+    },
+    {
+      instance_type = "m1.small"
+    },
+    {
+      instance_type = "m3.medium"
+    },
+    {
+      instance_type = "c4.large"
+    },
+  ]
+
+  min_size     = 10
+  desired_size = 10
+  max_size     = 30
+
   ami_id                = "${module.ecs.ami_id}"
   instance_profile_name = "${module.ecs.iam_instance_profile_name}"
   user_data             = "${module.ecs.user-data}"

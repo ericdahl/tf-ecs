@@ -35,3 +35,11 @@ variable "key_name" {}
 variable "spot_price" {
   default = ""
 }
+
+variable "overrides" {
+  type = "list"
+}
+
+variable "on_demand_percentage_above_base_capacity" {
+  default = 0
+}
