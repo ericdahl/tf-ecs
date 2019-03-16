@@ -39,7 +39,7 @@ resource "aws_iam_policy" "iam_drainer_policy" {
 
 resource "aws_iam_role_policy_attachment" "iam_drainer_policy" {
   policy_arn = "${aws_iam_policy.iam_drainer_policy.arn}"
-  role       = "${aws_iam_role.asg_hook.arn}"
+  role = "${aws_iam_role.asg_hook.name}"
 }
 
 resource "aws_iam_role" "asg_hook" {
