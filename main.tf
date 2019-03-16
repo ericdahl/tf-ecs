@@ -238,13 +238,7 @@ resource "aws_security_group_rule" "allow_2376" {
 data "aws_ami" "freebsd_11" {
   most_recent = true
 
-  filter {
-    name = "owner-id"
-
-    values = [
-      "118940168514",
-    ]
-  }
+  owners = ["118940168514"]
 
   filter {
     name = "name"

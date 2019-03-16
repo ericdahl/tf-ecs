@@ -13,10 +13,7 @@ resource "aws_ecs_cluster" "default" {
 data "aws_ami" "ecs" {
   most_recent = true
 
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
+  owners = [ "591542846629" ]
 
   filter {
     name   = "name"
