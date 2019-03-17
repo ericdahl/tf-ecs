@@ -21,7 +21,7 @@ resource "aws_ecs_service" "httpbin" {
   cluster         = "tf-cluster"
   name            = "tf-cluster-httpbin"
   task_definition = "${aws_ecs_task_definition.httpbin.arn}"
-  desired_count   = "12"
+  desired_count   = "1"
 
   enable_ecs_managed_tags = "true"
   propagate_tags          = "SERVICE"
@@ -59,6 +59,7 @@ resource "aws_ecs_service" "httpbin" {
   lifecycle {
     ignore_changes = ["desired_count"]
   }
+
 }
 
 resource "aws_alb" "ecs_service_httpbin" {
