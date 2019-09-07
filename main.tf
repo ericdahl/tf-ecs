@@ -222,6 +222,10 @@ module "ecs_asg_launch_template" {
 //  ]
 //}
 
+data "aws_iam_role" "autoscaling" {
+  name = "AWSServiceRoleForApplicationAutoScaling_ECSService"
+}
+
 resource "aws_security_group" "allow_2376" {
   vpc_id = "${module.vpc.vpc_id}"
 }

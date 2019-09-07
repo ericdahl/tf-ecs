@@ -110,13 +110,15 @@ resource "aws_alb_target_group" "default" {
   }
 }
 
+
+
 resource "aws_appautoscaling_target" "ecs_service_httpbin" {
   count = "${var.enable_ec2_httpbin == "true" ? 1 : 0}"
 
   max_capacity       = "${var.ec2_httpbin_max_capacity}"
   min_capacity       = "${var.ec2_httpbin_min_capacity}"
   resource_id        = "service/${module.ecs.cluster_name}/${aws_ecs_service.httpbin.name}"
-  role_arn           = "arn:aws:iam::689973912904:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+  role_arn           = "${data.aws_iam_role.autoscaling.arn}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
