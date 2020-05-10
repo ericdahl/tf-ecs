@@ -6,15 +6,8 @@ resource "aws_ecs_cluster" "default" {
   }
 }
 
-data "aws_ami" "ecs" {
-  most_recent = true
-
-  owners = [ "591542846629" ]
-
-  filter {
-    name   = "name"
-    values = ["*amazon-ecs-optimized*"]
-  }
+data "aws_ssm_parameter" "ecs_amazon_linux_2" {
+  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
 }
 
 data "template_file" "cloud_init" {

@@ -1,5 +1,5 @@
 output "ami_id" {
-  value = data.aws_ami.ecs.id
+  value = data.aws_ssm_parameter.ecs_amazon_linux_2.value
 }
 
 output "iam_role_ecs_service_name" {
