@@ -1,4 +1,5 @@
-variable "key_name" {}
+variable "key_name" {
+}
 
 variable "asg_desired_size" {
   default = 3
@@ -74,3 +75,4 @@ variable "ec2_httpbin_max_capacity" {
 variable "ec2_httpbin_min_capacity" {
   default = 12
 }
+

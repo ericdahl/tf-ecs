@@ -1,5 +1,5 @@
 output "aws_spot_fleet_request_default_id" {
-  value = "${aws_spot_fleet_request.default.id}"
+  value = aws_spot_fleet_request.default.id
 }
 
 //output "fleet_scale_down_arn" {

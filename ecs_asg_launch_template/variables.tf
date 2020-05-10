@@ -11,7 +11,7 @@ variable "desired_size" {
 }
 
 variable "subnets" {
-  type = "list"
+  type = list
 }
 
 variable "name" {}
@@ -25,7 +25,7 @@ variable "instance_type" {
 variable "instance_profile_name" {}
 
 variable "security_groups" {
-  type = "list"
+  type = list
 }
 
 variable "user_data" {}
@@ -37,7 +37,7 @@ variable "spot_price" {
 }
 
 variable "overrides" {
-  type = "list"
+  type = list(map(string))
 }
 
 variable "on_demand_percentage_above_base_capacity" {

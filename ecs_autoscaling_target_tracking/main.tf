@@ -1,8 +1,8 @@
 resource "aws_autoscaling_policy" "memory_reservation" {
-  count = "${var.memory_reservation_target >= 0 ? 1 : 0}"
+  count = var.memory_reservation_target >= 0 ? 1 : 0
 
   name                   = "ecs_autoscaling_memory"
-  autoscaling_group_name = "${var.asg_name}"
+  autoscaling_group_name = var.asg_name
 
   policy_type = "TargetTrackingScaling"
 
@@ -10,7 +10,7 @@ resource "aws_autoscaling_policy" "memory_reservation" {
     customized_metric_specification {
       metric_dimension {
         name  = "ClusterName"
-        value = "${var.cluster_name}"
+        value = var.cluster_name
       }
 
       metric_name = "MemoryReservation"
@@ -18,15 +18,15 @@ resource "aws_autoscaling_policy" "memory_reservation" {
       statistic   = "Average"
     }
 
-    target_value = "${var.memory_reservation_target}"
+    target_value = var.memory_reservation_target
   }
 }
 
 resource "aws_autoscaling_policy" "cpu_reservation" {
-  count = "${var.cpu_reservation_target >= 0 ? 1 : 0}"
+  count = var.cpu_reservation_target >= 0 ? 1 : 0
 
   name                   = "ecs_autoscaling_cpu"
-  autoscaling_group_name = "${var.asg_name}"
+  autoscaling_group_name = var.asg_name
 
   policy_type = "TargetTrackingScaling"
 
@@ -34,7 +34,7 @@ resource "aws_autoscaling_policy" "cpu_reservation" {
     customized_metric_specification {
       metric_dimension {
         name  = "ClusterName"
-        value = "${var.cluster_name}"
+        value = var.cluster_name
       }
 
       metric_name = "CPUReservation"
@@ -42,6 +42,6 @@ resource "aws_autoscaling_policy" "cpu_reservation" {
       statistic   = "Average"
     }
 
-    target_value = "${var.cpu_reservation_target}"
+    target_value = var.cpu_reservation_target
   }
 }

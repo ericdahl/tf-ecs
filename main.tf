@@ -2,13 +2,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
+terraform {
+  required_version = "> 0.12.0"
+}
+
 module "vpc" {
   source        = "github.com/ericdahl/tf-vpc"
-  admin_ip_cidr = "${var.admin_cidr}"
+  admin_ip_cidr = var.admin_cidr
 }
 
 module "ecs" {
-  source = "ecs_cluster"
+  source = "./ecs_cluster"
 
   cluster_name = "tf-cluster"
 }
@@ -50,23 +54,23 @@ module "ecs" {
 //}
 
 module "ecs_asg_launch_template" {
-  source = "ecs_asg_launch_template"
+  source = "./ecs_asg_launch_template"
   name   = "ecs-asg-launch-template"
 
   security_groups = [
-    "${module.vpc.sg_allow_egress}",
-    "${module.vpc.sg_allow_vpc}",
-    "${module.vpc.sg_allow_22}",
-    "${module.vpc.sg_allow_80}",
-    "${aws_security_group.allow_2376.id}",
+    module.vpc.sg_allow_egress,
+    module.vpc.sg_allow_vpc,
+    module.vpc.sg_allow_22,
+    module.vpc.sg_allow_80,
+    aws_security_group.allow_2376.id,
   ]
 
-  key_name = "${var.key_name}"
+  key_name = var.key_name
 
   subnets = [
-    "${module.vpc.subnet_private1}",
-    "${module.vpc.subnet_private2}",
-    "${module.vpc.subnet_private3}",
+    module.vpc.subnet_private1,
+    module.vpc.subnet_private2,
+    module.vpc.subnet_private3,
   ]
 
   instance_type = "t2.small"
@@ -93,9 +97,9 @@ module "ecs_asg_launch_template" {
   desired_size = 10
   max_size     = 30
 
-  ami_id                = "${module.ecs.ami_id}"
-  instance_profile_name = "${module.ecs.iam_instance_profile_name}"
-  user_data             = "${module.ecs.user-data}"
+  ami_id                = module.ecs.ami_id
+  instance_profile_name = module.ecs.iam_instance_profile_name
+  user_data             = module.ecs.user-data
 }
 
 //module "ecs_asg_spot" {
@@ -227,16 +231,16 @@ data "aws_iam_role" "autoscaling" {
 }
 
 resource "aws_security_group" "allow_2376" {
-  vpc_id = "${module.vpc.vpc_id}"
+  vpc_id = module.vpc.vpc_id
 }
 
 resource "aws_security_group_rule" "allow_2376" {
-  security_group_id = "${aws_security_group.allow_2376.id}"
+  security_group_id = aws_security_group.allow_2376.id
   from_port         = 2376
   protocol          = "tcp"
   to_port           = 2376
   type              = "ingress"
-  cidr_blocks       = ["${var.admin_cidr}"]
+  cidr_blocks       = [var.admin_cidr]
 }
 
 data "aws_ami" "freebsd_11" {
@@ -254,11 +258,11 @@ data "aws_ami" "freebsd_11" {
 }
 
 resource "aws_instance" "jumphost" {
-  ami                    = "${data.aws_ami.freebsd_11.image_id}"
+  ami                    = data.aws_ami.freebsd_11.image_id
   instance_type          = "t2.small"
-  subnet_id              = "${module.vpc.subnet_public1}"
-  vpc_security_group_ids = ["${module.vpc.sg_allow_22}", "${module.vpc.sg_allow_egress}"]
-  key_name               = "${var.key_name}"
+  subnet_id              = module.vpc.subnet_public1
+  vpc_security_group_ids = [module.vpc.sg_allow_22, module.vpc.sg_allow_egress]
+  key_name               = var.key_name
 
   user_data = <<EOF
 #!/usr/bin/env sh
@@ -270,7 +274,9 @@ pkg install -y bash
 chsh -s /usr/local/bin/bash ec2-user
 EOF
 
-  tags {
+
+  tags = {
     Name = "jumphost"
   }
 }
+

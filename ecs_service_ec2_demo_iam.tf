@@ -3,15 +3,15 @@
  */
 
 data "template_file" "demo_iam" {
-  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
+  count = var.enable_ec2_demo_iam == "true" ? 1 : 0
 
-  template = "${file("templates/tasks/demo_iam.json")}"
+  template = file("templates/tasks/demo_iam.json")
 }
 
 resource "aws_ecs_task_definition" "demo_iam" {
-  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
+  count = var.enable_ec2_demo_iam == "true" ? 1 : 0
 
-  container_definitions = "${data.template_file.demo_iam.rendered}"
+  container_definitions = data.template_file.demo_iam[0].rendered
   family                = "demo_iam"
 
   # IAM Task role granting access to S3 list operation
@@ -36,23 +36,22 @@ resource "aws_ecs_task_definition" "demo_iam" {
   # Every AWS SDK is expected to check for `$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`
   # and query it for credentials (example: https://github.com/aws/aws-sdk-ruby/blob/fd0373ea9/gems/aws-sdk-core/lib/aws-sdk-core/credential_provider_chain.rb#L86)
 
-
   # more info at https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
 
-  task_role_arn = "${aws_iam_role.demo_iam.arn}"
+  task_role_arn = aws_iam_role.demo_iam[0].arn
 }
 
 resource "aws_ecs_service" "demo_iam" {
-  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
+  count = var.enable_ec2_demo_iam == "true" ? 1 : 0
 
   cluster         = "tf-cluster"
   name            = "tf-cluster-demo_iam"
-  task_definition = "${aws_ecs_task_definition.demo_iam.arn}"
+  task_definition = aws_ecs_task_definition.demo_iam[0].arn
   desired_count   = "1"
 }
 
 resource "aws_iam_role" "demo_iam" {
-  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
+  count = var.enable_ec2_demo_iam == "true" ? 1 : 0
 
   name = "ecs_service_demo_iam"
 
@@ -71,13 +70,14 @@ resource "aws_iam_role" "demo_iam" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "demo_iam" {
-  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
+  count = var.enable_ec2_demo_iam == "true" ? 1 : 0
 
   name = "ecs_service_demo_iam"
-  role = "${aws_iam_role.demo_iam.name}"
+  role = aws_iam_role.demo_iam[0].name
 
   policy = <<EOF
 {
@@ -98,17 +98,19 @@ resource "aws_iam_role_policy" "demo_iam" {
         "s3:*"
       ],
       "Resource": [
-        "${aws_s3_bucket.demo_iam.arn}",
-        "${aws_s3_bucket.demo_iam.arn}/*"
+        "${aws_s3_bucket.demo_iam[0].arn}",
+        "${aws_s3_bucket.demo_iam[0].arn}/*"
       ]
     }
   ]
 }
 EOF
+
 }
 
 resource "aws_s3_bucket" "demo_iam" {
-  count = "${var.enable_ec2_demo_iam == "true" ? 1 : 0}"
+  count = var.enable_ec2_demo_iam == "true" ? 1 : 0
 
   bucket = "tf-demo-iam-2018"
 }
+

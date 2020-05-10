@@ -21,13 +21,13 @@ EOF
 
 resource "aws_iam_policy_attachment" "default" {
   name       = "${var.cluster_name}-ec2"
-  roles      = ["${aws_iam_role.ec2_role.name}"]
+  roles      = [aws_iam_role.ec2_role.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
 resource "aws_iam_instance_profile" "default" {
   name = "${var.cluster_name}-instance-profile"
-  role = "${aws_iam_role.ec2_role.name}"
+  role = aws_iam_role.ec2_role.name
 }
 
 resource "aws_iam_role" "ecs_service" {
@@ -53,7 +53,7 @@ EOF
 
 resource "aws_iam_policy_attachment" "ecs_service" {
   name       = "${var.cluster_name}-ecs-service"
-  roles      = ["${aws_iam_role.ecs_service.name}"]
+  roles      = [aws_iam_role.ecs_service.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
 
@@ -78,6 +78,6 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "fleet_terminate_name" {
-  role       = "${aws_iam_role.fleet.name}"
+  role       = aws_iam_role.fleet.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
 }
