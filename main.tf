@@ -93,9 +93,9 @@ module "ecs_asg_launch_template" {
     },
   ]
 
-  min_size     = 10
-  desired_size = 10
-  max_size     = 30
+  min_size     = var.asg_min_size
+  desired_size = var.asg_desired_size
+  max_size     = var.asg_max_size
 
   ami_id                = module.ecs.ami_id
   instance_profile_name = module.ecs.iam_instance_profile_name
