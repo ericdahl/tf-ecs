@@ -17,17 +17,6 @@ module "ecs" {
   cluster_name = "tf-cluster"
 }
 
-//module "ecs_drainer" {
-//  source = "ecs_drainer"
-//
-//  cluster_name = "${module.ecs.cluster_name}"
-//
-//  asg_names = [
-//    "${module.ecs_asg_spot.name}",
-//  ]
-//}
-
-
 module "ecs_asg" {
   source = "./ecs_asg"
   name   = "ecs-asg-launch-template"
@@ -73,6 +62,7 @@ module "ecs_asg" {
   max_size     = var.asg_max_size
 
   ami_id                = module.ecs.ami_id
+//  ami_id = "resolve:ssm/tf-ecs/ami-id"
   instance_profile_name = module.ecs.iam_instance_profile_name
   user_data             = module.ecs.user-data
 }
