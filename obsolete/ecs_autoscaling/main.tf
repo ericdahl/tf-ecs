@@ -1,9 +1,9 @@
 resource "aws_sns_topic" "scale_event" {
-  name = var.cluster_name}_autoscale_event"
+  name = "${var.cluster_name}_autoscale_event"
 }
 
 resource "aws_cloudwatch_metric_alarm" "memory_high" {
-  alarm_name = var.cluster_name}_memory_high"
+  alarm_name = "${var.cluster_name}_memory_high"
 
   namespace   = "AWS/ECS"
   metric_name = "MemoryReservation"
@@ -22,7 +22,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "memory_low" {
-  alarm_name = var.cluster_name}_memory_low"
+  alarm_name = "${var.cluster_name}_memory_low"
 
   namespace   = "AWS/ECS"
   metric_name = "MemoryReservation"
