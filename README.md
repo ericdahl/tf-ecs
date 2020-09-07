@@ -42,6 +42,12 @@ interval/healthy/unhealthy (30s startup time)
     4. 12/12 Health checks failed
     5. 12/12 Health checks failed
 
+## Unhealthy tasks without failed health check
+
+An ALB Target can go unhealthy due to user traffic even if the health check itself is responsive
+
+maybe? difficult to reproduce
+
 ### Questions
 
 - How is it possible for a 30s startup task to have any tasks stabilize if using 10s interval and 
