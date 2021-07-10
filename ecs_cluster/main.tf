@@ -6,9 +6,7 @@ resource "aws_ecs_cluster" "default" {
   }
 }
 
-data "aws_ssm_parameter" "ecs_amazon_linux_2" {
-  name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
-}
+
 
 data "template_file" "cloud_init" {
   template = file("${path.module}/templates/cloud-init.yml")
