@@ -1,4 +1,4 @@
-variable "key_name" {
+variable "ssh_public_key" {
 }
 
 variable "asg_desired_size" {
