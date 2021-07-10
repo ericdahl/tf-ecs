@@ -1,5 +1,5 @@
 resource "aws_autoscaling_group" "default" {
-  name = "var.name"
+  name = var.name
 
   min_size         = var.min_size
   max_size         = var.max_size
@@ -21,10 +21,10 @@ resource "aws_autoscaling_group" "default" {
     launch_template {
       launch_template_specification {
         launch_template_id = aws_launch_template.default.id
-        version = "$Latest"
+        version            = aws_launch_template.default.latest_version
       }
 
-      dynamic override {
+      dynamic "override" {
         for_each = var.overrides
         content {
           instance_type = override.value["instance_type"]
@@ -35,6 +35,13 @@ resource "aws_autoscaling_group" "default" {
     instances_distribution {
       # 0% means no on-demand
       on_demand_percentage_above_base_capacity = var.on_demand_percentage_above_base_capacity
+    }
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 0
     }
   }
 }

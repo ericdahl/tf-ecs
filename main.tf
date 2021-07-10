@@ -23,6 +23,13 @@ module "ecs" {
   cluster_name = "tf-cluster"
 }
 
+locals {
+  user_data_bottlerocket = <<EOF
+[settings.ecs]
+cluster = "${module.ecs.cluster_name}"
+EOF
+}
+
 module "ecs_asg" {
   source = "./ecs_asg"
   name   = "ecs-asg-launch-template"
@@ -64,15 +71,18 @@ module "ecs_asg" {
   desired_size = var.asg_desired_size
   max_size     = var.asg_max_size
 
-  ami_id                = data.aws_ssm_parameter.ecs_amazon_linux_2.value
+  ami_id                = data.aws_ssm_parameter.ecs_bottlerocket.value
   instance_profile_name = module.ecs.iam_instance_profile_name
-  user_data             = module.ecs.user-data
+  user_data             = local.user_data_bottlerocket
 }
 
 data "aws_ssm_parameter" "ecs_amazon_linux_2" {
   name = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
 }
 
+data "aws_ssm_parameter" "ecs_bottlerocket" {
+  name = "/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id"
+}
 
 data "aws_iam_role" "autoscaling" {
   name = "AWSServiceRoleForApplicationAutoScaling_ECSService"
