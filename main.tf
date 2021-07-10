@@ -27,7 +27,47 @@ locals {
   user_data_bottlerocket = <<EOF
 [settings.ecs]
 cluster = "${module.ecs.cluster_name}"
+
+[settings.host-containers.admin]
+enabled = true
 EOF
+}
+
+resource "aws_security_group" "ecs_instance" {
+  vpc_id = module.vpc.vpc_id
+  name = "ecs"
+
+  tags = {
+    Name = "ecs-instance"
+  }
+}
+
+
+resource "aws_security_group_rule" "ecs_instance_egress" {
+  security_group_id = aws_security_group.ecs_instance.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "ecs_instance_ingress_ssh" {
+  security_group_id = aws_security_group.ecs_instance.id
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  source_security_group_id = aws_security_group.jumphost.id
+}
+
+resource "aws_security_group_rule" "ecs_instance_ingress_vpc" {
+  security_group_id = aws_security_group.ecs_instance.id
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["10.0.0.0/8"] # TODO: remove rule and replace with specific
 }
 
 module "ecs_asg" {
@@ -35,11 +75,7 @@ module "ecs_asg" {
   name   = "ecs-asg-launch-template"
 
   security_groups = [
-    module.vpc.sg_allow_egress,
-    module.vpc.sg_allow_vpc,
-    module.vpc.sg_allow_22,
-    module.vpc.sg_allow_80,
-    aws_security_group.allow_2376.id,
+    aws_security_group.ecs_instance.id
   ]
 
   key_name = aws_key_pair.key.key_name
@@ -88,37 +124,7 @@ data "aws_iam_role" "autoscaling" {
   name = "AWSServiceRoleForApplicationAutoScaling_ECSService"
 }
 
-resource "aws_security_group" "allow_2376" {
-  vpc_id = module.vpc.vpc_id
-}
-
-resource "aws_security_group_rule" "allow_2376" {
-  security_group_id = aws_security_group.allow_2376.id
-  from_port         = 2376
-  protocol          = "tcp"
-  to_port           = 2376
-  type              = "ingress"
-  cidr_blocks       = [var.admin_cidr]
-}
-
-
 resource "aws_key_pair" "key" {
   public_key = var.ssh_public_key
-}
-
-data "aws_ssm_parameter" "amazon_linux_2_ami" {
-  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-}
-
-resource "aws_instance" "jumphost" {
-  ami                    = data.aws_ssm_parameter.amazon_linux_2_ami.value
-  instance_type          = "t2.small"
-  subnet_id              = module.vpc.subnet_public1
-  vpc_security_group_ids = [module.vpc.sg_allow_22, module.vpc.sg_allow_egress]
-  key_name               = aws_key_pair.key.key_name
-
-  tags = {
-    Name = "jumphost"
-  }
 }
 

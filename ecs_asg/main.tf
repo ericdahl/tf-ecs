@@ -42,6 +42,7 @@ resource "aws_autoscaling_group" "default" {
     strategy = "Rolling"
     preferences {
       min_healthy_percentage = 0
+      instance_warmup        = 0
     }
   }
 }
