@@ -120,3 +120,31 @@ resource "aws_appautoscaling_policy" "target_cpu_reservation" {
 
   depends_on = [aws_appautoscaling_target.default]
 }
+
+
+
+
+resource "aws_iam_role" "fleet" {
+  name = "iam_fleet_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "spotfleet.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "fleet_terminate_name" {
+  role       = aws_iam_role.fleet.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+}

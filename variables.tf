@@ -1,3 +1,7 @@
+variable "name" {
+  default = "tf-ecs"
+}
+
 variable "ssh_public_key" {
 }
 

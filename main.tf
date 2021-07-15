@@ -4,6 +4,7 @@ provider "aws" {
   default_tags {
     tags = {
       Name = "tf-ecs"
+      Provisioner = "Terraform"
     }
   }
 }
@@ -17,16 +18,27 @@ module "vpc" {
   admin_ip_cidr = var.admin_cidr
 }
 
-module "ecs" {
-  source = "./ecs_cluster"
 
-  cluster_name = "tf-cluster"
+resource "aws_ecs_cluster" "default" {
+  name = var.name
 }
+
+
+
+data "template_file" "cloud_init" {
+  template = file("${path.module}/templates/cloud-init.yml")
+
+  vars = {
+    cluster_name = aws_ecs_cluster.default.name
+  }
+}
+
+
 
 locals {
   user_data_bottlerocket = <<EOF
 [settings.ecs]
-cluster = "${module.ecs.cluster_name}"
+cluster = "${aws_ecs_cluster.default.name}"
 
 [settings.host-containers.admin]
 enabled = true
@@ -108,7 +120,7 @@ module "ecs_asg" {
   max_size     = var.asg_max_size
 
   ami_id                = data.aws_ssm_parameter.ecs_bottlerocket.value
-  instance_profile_name = module.ecs.iam_instance_profile_name
+  instance_profile_name = aws_iam_instance_profile.ecs_ec2.name
   user_data             = local.user_data_bottlerocket
 }
 
@@ -128,3 +140,34 @@ resource "aws_key_pair" "key" {
   public_key = var.ssh_public_key
 }
 
+resource "aws_iam_role" "ec2_role" {
+  name        = "${aws_ecs_cluster.default.name}-instance-role"
+  description = "Role applied to ECS container instances - EC2 hosts - allowing them to register themselves, pull images from ECR, etc."
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_policy_attachment" "default" {
+  name       = "${aws_ecs_cluster.default.name}-ec2"
+  roles      = [aws_iam_role.ec2_role.name]
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs_ec2" {
+  name = "${aws_ecs_cluster.default.name}-instance-profile"
+  role = aws_iam_role.ec2_role.name
+}

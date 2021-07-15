@@ -18,7 +18,7 @@ resource "aws_ecs_task_definition" "httpbin" {
 resource "aws_ecs_service" "httpbin" {
   count = var.enable_ec2_httpbin == "true" ? 1 : 0
 
-  cluster         = "tf-cluster"
+  cluster         = aws_ecs_cluster.default.name
   name            = "tf-cluster-httpbin"
   task_definition = aws_ecs_task_definition.httpbin[0].arn
   desired_count   = "1"
@@ -29,8 +29,6 @@ resource "aws_ecs_service" "httpbin" {
     ServiceName = "tf-cluster-httpbin"
     ClusterName = "tf-cluster"
   }
-
-  iam_role = module.ecs.iam_role_ecs_service_name
 
   # to avoid possible race condition error on creation
   depends_on = [aws_alb.ecs_service_httpbin]
@@ -114,7 +112,7 @@ resource "aws_appautoscaling_target" "ecs_service_httpbin" {
 
   max_capacity       = var.ec2_httpbin_max_capacity
   min_capacity       = var.ec2_httpbin_min_capacity
-  resource_id        = "service/${module.ecs.cluster_name}/${aws_ecs_service.httpbin[0].name}"
+  resource_id        = "service/${aws_ecs_cluster.default.name}/${aws_ecs_service.httpbin[0].name}"
   role_arn           = data.aws_iam_role.autoscaling.arn
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"

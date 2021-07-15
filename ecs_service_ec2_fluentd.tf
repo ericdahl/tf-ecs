@@ -24,8 +24,6 @@ resource "aws_ecs_service" "fluentd_aggregator" {
   task_definition = aws_ecs_task_definition.fluentd_aggregator[0].arn
   desired_count   = "2"
 
-  iam_role = module.ecs.iam_role_ecs_service_name
-
   # to avoid possible race condition error on creation
   depends_on = [aws_lb.fluentd_aggregator]
 
