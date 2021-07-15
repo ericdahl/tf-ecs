@@ -45,6 +45,8 @@ resource "aws_autoscaling_group" "default" {
       instance_warmup        = 0
     }
   }
+
+  protect_from_scale_in = true
 }
 
 resource "aws_launch_template" "default" {

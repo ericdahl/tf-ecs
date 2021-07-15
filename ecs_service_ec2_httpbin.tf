@@ -55,7 +55,10 @@ resource "aws_ecs_service" "httpbin" {
   health_check_grace_period_seconds = 300
 
   lifecycle {
-    ignore_changes = [desired_count]
+    ignore_changes = [
+      desired_count,
+      capacity_provider_strategy
+    ]
   }
 }
 

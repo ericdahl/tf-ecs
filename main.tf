@@ -18,9 +18,31 @@ module "vpc" {
   admin_ip_cidr = var.admin_cidr
 }
 
+resource "aws_ecs_capacity_provider" "default" {
+  name = var.name
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = module.ecs_asg.arn
+
+    managed_scaling {
+      maximum_scaling_step_size = 1000
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 75
+    }
+    managed_termination_protection = "ENABLED"
+
+  }
+}
 
 resource "aws_ecs_cluster" "default" {
   name = var.name
+
+  capacity_providers = [aws_ecs_capacity_provider.default.name]
+
+  default_capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.default.name
+    weight = 100
+  }
 }
 
 
@@ -29,7 +51,7 @@ data "template_file" "cloud_init" {
   template = file("${path.module}/templates/cloud-init.yml")
 
   vars = {
-    cluster_name = aws_ecs_cluster.default.name
+    cluster_name = var.name
   }
 }
 
@@ -38,7 +60,7 @@ data "template_file" "cloud_init" {
 locals {
   user_data_bottlerocket = <<EOF
 [settings.ecs]
-cluster = "${aws_ecs_cluster.default.name}"
+cluster = "${var.name}"
 
 [settings.host-containers.admin]
 enabled = true
@@ -81,6 +103,8 @@ resource "aws_security_group_rule" "ecs_instance_ingress_vpc" {
   protocol          = "-1"
   cidr_blocks       = ["10.0.0.0/8"] # TODO: remove rule and replace with specific
 }
+
+
 
 module "ecs_asg" {
   source = "./ecs_asg"
@@ -141,7 +165,7 @@ resource "aws_key_pair" "key" {
 }
 
 resource "aws_iam_role" "ec2_role" {
-  name        = "${aws_ecs_cluster.default.name}-instance-role"
+  name        = "${var.name}-instance-role"
   description = "Role applied to ECS container instances - EC2 hosts - allowing them to register themselves, pull images from ECR, etc."
 
   assume_role_policy = <<EOF
@@ -168,6 +192,6 @@ resource "aws_iam_policy_attachment" "default" {
 }
 
 resource "aws_iam_instance_profile" "ecs_ec2" {
-  name = "${aws_ecs_cluster.default.name}-instance-profile"
+  name = "${aws_iam_role.ec2_role.name}-instance-profile"
   role = aws_iam_role.ec2_role.name
 }
