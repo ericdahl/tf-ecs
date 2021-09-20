@@ -65,6 +65,12 @@ cluster = "${var.name}"
 [settings.host-containers.admin]
 enabled = true
 EOF
+
+
+  user_data = <<EOF
+#!/bin/bash
+echo "ECS_CLUSTER=${var.name}" >> /etc/ecs/ecs.config
+EOF
 }
 
 resource "aws_security_group" "ecs_instance" {
@@ -143,9 +149,11 @@ module "ecs_asg" {
   desired_size = var.asg_desired_size
   max_size     = var.asg_max_size
 
-  ami_id                = data.aws_ssm_parameter.ecs_bottlerocket.value
+//  ami_id                = data.aws_ssm_parameter.ecs_bottlerocket.value
+  ami_id                = data.aws_ssm_parameter.ecs_amazon_linux_2.value
   instance_profile_name = aws_iam_instance_profile.ecs_ec2.name
-  user_data             = local.user_data_bottlerocket
+//  user_data             = local.user_data_bottlerocket
+  user_data = local.user_data
 }
 
 data "aws_ssm_parameter" "ecs_amazon_linux_2" {
