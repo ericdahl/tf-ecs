@@ -23,6 +23,11 @@ resource "aws_ecs_service" "httpbin" {
   task_definition = aws_ecs_task_definition.httpbin[0].arn
   desired_count   = "1"
 
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
+
   enable_ecs_managed_tags = "true"
   propagate_tags          = "SERVICE"
   tags = {
