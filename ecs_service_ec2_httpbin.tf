@@ -1,5 +1,5 @@
 data "template_file" "httpbin" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   template = file("templates/tasks/httpbin.json")
 
@@ -9,14 +9,14 @@ data "template_file" "httpbin" {
 }
 
 resource "aws_ecs_task_definition" "httpbin" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   container_definitions = data.template_file.httpbin[0].rendered
   family                = "httpbin"
 }
 
 resource "aws_ecs_service" "httpbin" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   cluster         = aws_ecs_cluster.default.name
   name            = "tf-cluster-httpbin"
@@ -68,7 +68,7 @@ resource "aws_ecs_service" "httpbin" {
 }
 
 resource "aws_alb" "ecs_service_httpbin" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   name = "httpbin-ec2"
 
@@ -85,7 +85,7 @@ resource "aws_alb" "ecs_service_httpbin" {
 }
 
 resource "aws_alb_listener" "default" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   default_action {
     target_group_arn = aws_alb_target_group.default[0].arn
@@ -97,7 +97,7 @@ resource "aws_alb_listener" "default" {
 }
 
 resource "aws_alb_target_group" "default" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   name                 = "httpbin-ec2"
   vpc_id               = module.vpc.vpc_id
@@ -116,7 +116,7 @@ resource "aws_alb_target_group" "default" {
 }
 
 resource "aws_appautoscaling_target" "ecs_service_httpbin" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   max_capacity       = var.ec2_httpbin_max_capacity
   min_capacity       = var.ec2_httpbin_min_capacity
@@ -127,7 +127,7 @@ resource "aws_appautoscaling_target" "ecs_service_httpbin" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_service_httpbin_target_tracking" {
-  count = var.enable_ec2_httpbin == "true" ? 1 : 0
+  count = var.enable_ec2_httpbin ? 1 : 0
 
   name               = "ecs_service_httpbin_target_tracking"
   policy_type        = "TargetTrackingScaling"

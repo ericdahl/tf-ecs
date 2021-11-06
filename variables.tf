@@ -37,11 +37,11 @@ variable "ecs_spot_fleet_desired_size" {
  * Service/Feature toggles
  */
 variable "enable_fargate_httpbin" {
-  default = "false"
+  default = false
 }
 
 variable "enable_ec2_signalfx" {
-  default = "false"
+  default = false
 }
 
 variable "signalfx_api_key" {
@@ -49,27 +49,27 @@ variable "signalfx_api_key" {
 }
 
 variable "enable_ec2_demo_iam" {
-  default = "false"
+  default = false
 }
 
 variable "enable_ec2_fluentd" {
-  default = "false"
+  default = false
 }
 
 variable "enable_ec2_httpbin" {
-  default = "true"
+  default = false
 }
 
 variable "enable_ec2_ssm_secret" {
-  default = "false"
+  default = false
 }
 
 variable "enable_ec2_ghost" {
-  default = "false"
+  default = false
 }
 
 variable "enable_ec2_demo_service_discovery" {
-  default = "false"
+  default = false
 }
 
 variable "ec2_httpbin_max_capacity" {

@@ -1,5 +1,5 @@
 data "template_file" "signalfx" {
-  count = var.enable_ec2_signalfx == "true" ? 1 : 0
+  count = var.enable_ec2_signalfx ? 1 : 0
 
   template = file("templates/tasks/signalfx.json")
 
@@ -9,7 +9,7 @@ data "template_file" "signalfx" {
 }
 
 resource "aws_ecs_task_definition" "signalfx" {
-  count = var.enable_ec2_signalfx == "true" ? 1 : 0
+  count = var.enable_ec2_signalfx ? 1 : 0
 
   container_definitions = data.template_file.signalfx[0].rendered
   family                = "signalfx"
@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "signalfx" {
 }
 
 resource "aws_ecs_service" "signalfx" {
-  count = var.enable_ec2_signalfx == "true" ? 1 : 0
+  count = var.enable_ec2_signalfx ? 1 : 0
 
   cluster             = "tf-cluster"
   name                = "tf-cluster-signalfx"

@@ -1,5 +1,5 @@
 data "template_file" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   template = file("templates/tasks/ghost.json")
 
@@ -13,14 +13,14 @@ data "template_file" "ghost" {
 }
 
 resource "aws_ecs_task_definition" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   container_definitions = data.template_file.ghost[0].rendered
   family                = "ghost"
 }
 
 resource "aws_ecs_service" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   cluster         = "tf-cluster"
   name            = "tf-cluster-ghost"
@@ -41,7 +41,7 @@ resource "aws_ecs_service" "ghost" {
 }
 
 resource "aws_alb" "ecs_service_ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   name = "ghost-ec2"
 
@@ -58,7 +58,7 @@ resource "aws_alb" "ecs_service_ghost" {
 }
 
 resource "aws_alb_listener" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   default_action {
     target_group_arn = aws_alb_target_group.ghost[0].arn
@@ -70,7 +70,7 @@ resource "aws_alb_listener" "ghost" {
 }
 
 resource "aws_alb_target_group" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   name                 = "ghost-ec2"
   vpc_id               = module.vpc.vpc_id
@@ -87,7 +87,7 @@ resource "aws_alb_target_group" "ghost" {
 }
 
 resource "aws_rds_cluster" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   cluster_identifier = "ghost"
 
@@ -114,7 +114,7 @@ resource "aws_rds_cluster" "ghost" {
 }
 
 resource "aws_rds_cluster_instance" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   cluster_identifier = aws_rds_cluster.ghost[0].id
 
@@ -125,7 +125,7 @@ resource "aws_rds_cluster_instance" "ghost" {
 }
 
 resource "aws_db_subnet_group" "ghost" {
-  count = var.enable_ec2_ghost == "true" ? 1 : 0
+  count = var.enable_ec2_ghost ? 1 : 0
 
   subnet_ids = [
     module.vpc.subnet_private1,
@@ -136,7 +136,7 @@ resource "aws_db_subnet_group" "ghost" {
 
 //
 //resource "aws_appautoscaling_target" "ecs_service_ghost" {
-//  count = "${var.enable_ec2_ghost == "true" ? 1 : 0}"
+//  count = "${var.enable_ec2_ghost ? 1 : 0}"
 //
 //  max_capacity       = "${var.ec2_ghost_max_capacity}"
 //  min_capacity       = "${var.ec2_ghost_min_capacity}"
@@ -148,7 +148,7 @@ resource "aws_db_subnet_group" "ghost" {
 //
 //
 //resource "aws_appautoscaling_policy" "ecs_service_ghost_target_tracking" {
-//  count = "${var.enable_ec2_ghost == "true" ? 1 : 0}"
+//  count = "${var.enable_ec2_ghost ? 1 : 0}"
 //
 //  name                    = "ecs_service_ghost_target_tracking"
 //  policy_type             = "TargetTrackingScaling"

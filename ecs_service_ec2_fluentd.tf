@@ -5,19 +5,19 @@
 # adjust health probe settings for faster NLB resolution on startup of forwarder?
 
 data "template_file" "fluentd" {
-  count    = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count    = var.enable_ec2_fluentd ? 1 : 0
   template = file("templates/tasks/fluentd-aggregator.json")
 }
 
 resource "aws_ecs_task_definition" "fluentd_aggregator" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   container_definitions = data.template_file.fluentd[0].rendered
   family                = "fluentd"
 }
 
 resource "aws_ecs_service" "fluentd_aggregator" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   cluster         = "tf-cluster"
   name            = "fluentd-aggregator"
@@ -39,19 +39,8 @@ resource "aws_ecs_service" "fluentd_aggregator" {
   }
 }
 
-//resource "aws_elb" "fluentd_aggregator" {
-//
-//  listener {
-//
-//    instance_port = 0
-//    instance_protocol = ""
-//    lb_port = 0
-//    lb_protocol = ""
-//  }
-//}
-
 resource "aws_lb" "fluentd_aggregator" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   name               = "fluentd"
   load_balancer_type = "network"
@@ -65,7 +54,7 @@ resource "aws_lb" "fluentd_aggregator" {
 }
 
 resource "aws_lb_listener" "fluentd_aggregator" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   load_balancer_arn = aws_lb.fluentd_aggregator[0].arn
   port              = 24224
@@ -78,7 +67,7 @@ resource "aws_lb_listener" "fluentd_aggregator" {
 }
 
 resource "aws_lb_target_group" "fluentd_aggregator" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   port     = 24224
   protocol = "TCP"
@@ -92,7 +81,7 @@ resource "aws_lb_target_group" "fluentd_aggregator" {
 ///////////////////////////////////////////////////
 
 data "template_file" "fluentd_forwarder" {
-  count    = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count    = var.enable_ec2_fluentd ? 1 : 0
   template = file("templates/tasks/fluentd-forwarder.json")
 
   vars = {
@@ -101,7 +90,7 @@ data "template_file" "fluentd_forwarder" {
 }
 
 resource "aws_ecs_task_definition" "fluentd_forwarder" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   container_definitions = data.template_file.fluentd_forwarder[0].rendered
   family                = "fluentd-forwarder"
@@ -118,7 +107,7 @@ resource "aws_ecs_task_definition" "fluentd_forwarder" {
 }
 
 resource "aws_ecs_service" "fluentd_forwarder" {
-  count = var.enable_ec2_fluentd == "true" ? 1 : 0
+  count = var.enable_ec2_fluentd ? 1 : 0
 
   cluster             = "tf-cluster"
   name                = "fluentd-forwarder"

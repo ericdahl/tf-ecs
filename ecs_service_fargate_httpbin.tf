@@ -3,7 +3,7 @@ data "template_file" "httpbin_fargate" {
 }
 
 resource "aws_ecs_task_definition" "httpbin_fargate" {
-  count = var.enable_fargate_httpbin == "true" ? 1 : 0
+  count = var.enable_fargate_httpbin ? 1 : 0
 
   container_definitions = data.template_file.httpbin_fargate.rendered
   family                = "httpbin-fargate"
@@ -18,7 +18,7 @@ resource "aws_ecs_task_definition" "httpbin_fargate" {
 }
 
 resource "aws_ecs_service" "httpbin_fargate" {
-  count = var.enable_fargate_httpbin == "true" ? 1 : 0
+  count = var.enable_fargate_httpbin ? 1 : 0
 
   name            = "httpbin-fargate"
   cluster         = aws_ecs_cluster.default.name
@@ -48,7 +48,7 @@ resource "aws_ecs_service" "httpbin_fargate" {
 }
 
 resource "aws_alb" "httpbin_fargate" {
-  count = var.enable_fargate_httpbin == "true" ? 1 : 0
+  count = var.enable_fargate_httpbin ? 1 : 0
 
   name = "httpbin-fargate"
 
@@ -65,7 +65,7 @@ resource "aws_alb" "httpbin_fargate" {
 }
 
 resource "aws_alb_listener" "httpbin_fargate" {
-  count = var.enable_fargate_httpbin == "true" ? 1 : 0
+  count = var.enable_fargate_httpbin ? 1 : 0
 
   default_action {
     target_group_arn = aws_alb_target_group.httpbin_fargate[0].arn
@@ -77,7 +77,7 @@ resource "aws_alb_listener" "httpbin_fargate" {
 }
 
 resource "aws_alb_target_group" "httpbin_fargate" {
-  count = var.enable_fargate_httpbin == "true" ? 1 : 0
+  count = var.enable_fargate_httpbin ? 1 : 0
 
   name                 = "httpbin-fargate"
   vpc_id               = module.vpc.vpc_id

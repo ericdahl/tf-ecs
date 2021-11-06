@@ -1,17 +1,17 @@
 data "template_file" "ssm_secret" {
-  count    = var.enable_ec2_ssm_secret == "true" ? 1 : 0
+  count    = var.enable_ec2_ssm_secret ? 1 : 0
   template = file("templates/tasks/ssm_secret.json")
 }
 
 resource "aws_ecs_task_definition" "ssm_secret" {
-  count                 = var.enable_ec2_ssm_secret == "true" ? 1 : 0
+  count                 = var.enable_ec2_ssm_secret ? 1 : 0
   container_definitions = data.template_file.ssm_secret[0].rendered
   family                = "ssm_secret"
   execution_role_arn    = aws_iam_role.ssm_secret[0].arn
 }
 
 resource "aws_ecs_service" "ssm_secret" {
-  count = var.enable_ec2_ssm_secret == "true" ? 1 : 0
+  count = var.enable_ec2_ssm_secret ? 1 : 0
 
   cluster         = "tf-cluster"
   name            = "tf-cluster-ssm_secret"
@@ -20,7 +20,7 @@ resource "aws_ecs_service" "ssm_secret" {
 }
 
 resource "aws_ssm_parameter" "ssm_secret" {
-  count = var.enable_ec2_ssm_secret == "true" ? 1 : 0
+  count = var.enable_ec2_ssm_secret ? 1 : 0
 
   name  = "MY_SECRET"
   type  = "SecureString"
@@ -28,7 +28,7 @@ resource "aws_ssm_parameter" "ssm_secret" {
 }
 
 resource "aws_iam_role" "ssm_secret" {
-  count = var.enable_ec2_ssm_secret == "true" ? 1 : 0
+  count = var.enable_ec2_ssm_secret ? 1 : 0
 
   name        = "tf-cluster-ssm_secret_execution_role"
   description = "Role used by demo ECS service to pull SSM secrets and populate in environment"
@@ -52,7 +52,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "ssm_secret" {
-  count = var.enable_ec2_ssm_secret == "true" ? 1 : 0
+  count = var.enable_ec2_ssm_secret ? 1 : 0
 
   name = "tf-cluster-ssm_secret_execution_role"
   role = aws_iam_role.ssm_secret[0].id
