@@ -102,14 +102,6 @@ resource "aws_rds_cluster" "ghost" {
   final_snapshot_identifier = "ghost"
 
   db_subnet_group_name = aws_db_subnet_group.ghost[0].name
-  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-  # force an interpolation expression to be interpreted as a list by wrapping it
-  # in an extra set of list brackets. That form was supported for compatibility in
-  # v0.11, but is no longer supported in Terraform v0.12.
-  #
-  # If the expression in the following list itself returns a list, remove the
-  # brackets to avoid interpretation as a list of lists. If the expression
-  # returns a single list item then leave it as-is and remove this TODO comment.
   vpc_security_group_ids = [module.vpc.sg_allow_vpc]
 }
 
@@ -134,36 +126,3 @@ resource "aws_db_subnet_group" "ghost" {
   ]
 }
 
-//
-//resource "aws_appautoscaling_target" "ecs_service_ghost" {
-//  count = "${var.enable_ec2_ghost ? 1 : 0}"
-//
-//  max_capacity       = "${var.ec2_ghost_max_capacity}"
-//  min_capacity       = "${var.ec2_ghost_min_capacity}"
-//  resource_id        = "service/${module.ecs.cluster_name}/${aws_ecs_service.ghost.name}"
-//  role_arn           = "arn:aws:iam::689973912904:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
-//  scalable_dimension = "ecs:service:DesiredCount"
-//  service_namespace  = "ecs"
-//}
-//
-//
-//resource "aws_appautoscaling_policy" "ecs_service_ghost_target_tracking" {
-//  count = "${var.enable_ec2_ghost ? 1 : 0}"
-//
-//  name                    = "ecs_service_ghost_target_tracking"
-//  policy_type             = "TargetTrackingScaling"
-//  resource_id             = "${aws_appautoscaling_target.ecs_service_ghost.resource_id}"
-//  scalable_dimension      = "${aws_appautoscaling_target.ecs_service_ghost.scalable_dimension}"
-//  service_namespace       = "${aws_appautoscaling_target.ecs_service_ghost.service_namespace}"
-//
-//  target_tracking_scaling_policy_configuration {
-//    target_value = 30
-//
-//    predefined_metric_specification {
-//      predefined_metric_type = "ALBRequestCountPerTarget"
-//      resource_label = "${aws_alb.ecs_service_ghost.arn_suffix}/${aws_alb_target_group.ghost.arn_suffix}"
-//    }
-//  }
-//
-//  depends_on = ["aws_appautoscaling_target.ecs_service_ghost"]
-//}

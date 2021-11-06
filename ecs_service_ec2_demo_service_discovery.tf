@@ -1,14 +1,8 @@
-data "template_file" "demo_service_discovery" {
-  count = var.enable_ec2_demo_service_discovery ? 1 : 0
-
-  template = file("templates/tasks/demo_service_discovery.json")
-}
-
 resource "aws_ecs_task_definition" "demo_service_discovery" {
   count = var.enable_ec2_demo_service_discovery ? 1 : 0
-
-  container_definitions = data.template_file.demo_service_discovery[0].rendered
   family                = "demo_service_discovery"
+
+  container_definitions = templatefile("templates/tasks/demo_service_discovery.json", {})
 }
 
 resource "aws_ecs_service" "demo_service_discovery" {
