@@ -1,28 +1,21 @@
-data "template_file" "ghost" {
+resource "aws_ecs_task_definition" "ghost" {
   count = var.enable_ec2_ghost ? 1 : 0
 
-  template = file("templates/tasks/ghost.json")
+  family                = "ghost"
 
-  vars = {
+  container_definitions = templatefile("templates/tasks/ghost.json", {
     url           = "http://${aws_alb.ecs_service_ghost[0].dns_name}"
     database_host = aws_rds_cluster.ghost[0].endpoint
     database_name = aws_rds_cluster.ghost[0].database_name
     database_user = aws_rds_cluster.ghost[0].master_username
     database_port = aws_rds_cluster.ghost[0].port
-  }
-}
-
-resource "aws_ecs_task_definition" "ghost" {
-  count = var.enable_ec2_ghost ? 1 : 0
-
-  container_definitions = data.template_file.ghost[0].rendered
-  family                = "ghost"
+  })
 }
 
 resource "aws_ecs_service" "ghost" {
   count = var.enable_ec2_ghost ? 1 : 0
 
-  cluster         = "tf-cluster"
+  cluster         = aws_ecs_cluster.default.name
   name            = "tf-cluster-ghost"
   task_definition = aws_ecs_task_definition.ghost[0].arn
   desired_count   = "2"
@@ -37,6 +30,13 @@ resource "aws_ecs_service" "ghost" {
     target_group_arn = aws_alb_target_group.ghost[0].arn
     container_name   = "ghost"
     container_port   = 2368
+  }
+
+  # https://github.com/hashicorp/terraform-provider-aws/issues/11351
+  lifecycle {
+    ignore_changes = [
+      capacity_provider_strategy
+    ]
   }
 }
 
@@ -76,7 +76,7 @@ resource "aws_alb_target_group" "ghost" {
   vpc_id               = module.vpc.vpc_id
   port                 = 2368
   protocol             = "HTTP"
-  deregistration_delay = 5
+  deregistration_delay = 0
 
   health_check {
     healthy_threshold   = 2
@@ -124,5 +124,9 @@ resource "aws_db_subnet_group" "ghost" {
     module.vpc.subnet_private2,
     module.vpc.subnet_private3,
   ]
+}
+
+output "ghost" {
+  value = join("", aws_alb.ecs_service_ghost.*.dns_name)
 }
 

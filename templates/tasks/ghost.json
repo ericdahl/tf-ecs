@@ -2,7 +2,7 @@
   {
     "essential": true,
     "name": "ghost",
-    "image": "ghost:2",
+    "image": "ghost:4",
     "memory": 512,
     "cpu": 128,
     "environment": [
