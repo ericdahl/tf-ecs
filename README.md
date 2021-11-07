@@ -58,4 +58,4 @@ unhealthy_threshold=2? 10/12 were healthy immediately but other 2 failed repeate
 
 # ECS Capacity Provider
 
-![Design of ECS Capacity Providers](https://user-images.githubusercontent.com/4712580/140661791-eeeda7ae-78ed-415b-8369-7645b01bfb1b.png)
+![Design of ECS Capacity Providers](https://user-images.githubusercontent.com/4712580/140661839-f1d34c36-3719-44d4-9d09-de65c1e01bde.png)
