@@ -54,3 +54,8 @@ maybe? difficult to reproduce
 unhealthy_threshold=2? 10/12 were healthy immediately but other 2 failed repeatedly
 
 - Why is it sometimes Request timed out and sometimes Health checks failed?
+
+
+# ECS Capacity Provider
+
+![Design of ECS Capacity Providers](https://user-images.githubusercontent.com/4712580/140661791-eeeda7ae-78ed-415b-8369-7645b01bfb1b.png)
