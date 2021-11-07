@@ -59,3 +59,24 @@ unhealthy_threshold=2? 10/12 were healthy immediately but other 2 failed repeate
 # ECS Capacity Provider
 
 ![Design of ECS Capacity Providers](https://user-images.githubusercontent.com/4712580/140661839-f1d34c36-3719-44d4-9d09-de65c1e01bde.png)
+
+
+# 2021-11-07 ECS Optimized AMI notes
+
+```
+$ docker info
+...
+ Storage Driver: overlay2
+  Backing Filesystem: extfs
+  Supports d_type: true
+  Native Overlay Diff: true
+  userxattr: false
+
+```
+
+- container data in  /var/lib/docker/overlay2/
+
+```
+]# uname -a
+Linux ip-10-0-101-211.ec2.internal 4.14.248-189.473.amzn2.x86_64 #1 SMP Mon Sep 27 05:52:26 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+```

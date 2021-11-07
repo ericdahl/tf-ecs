@@ -1,18 +1,11 @@
-data "template_file" "httpbin" {
-  count = var.enable_ec2_httpbin ? 1 : 0
-
-  template = file("templates/tasks/httpbin.json")
-
-  vars = {
-    delay_start_connect = "30"
-  }
-}
-
 resource "aws_ecs_task_definition" "httpbin" {
   count = var.enable_ec2_httpbin ? 1 : 0
 
-  container_definitions = data.template_file.httpbin[0].rendered
   family                = "httpbin"
+
+  container_definitions = templatefile("templates/tasks/httpbin.json", {
+    delay_start_connect: 0
+  })
 }
 
 resource "aws_ecs_service" "httpbin" {
