@@ -61,6 +61,69 @@ unhealthy_threshold=2? 10/12 were healthy immediately but other 2 failed repeate
 ![Design of ECS Capacity Providers](https://user-images.githubusercontent.com/4712580/140661839-f1d34c36-3719-44d4-9d09-de65c1e01bde.png)
 
 
+- Fargate
+  - enables split of spot/on-demand
+  - before: was mostly either on-demand or spot
+  - do this via setting base/weight on both the on-demand/spot capacity providers at once
+
+- Enables tasks to be in "Provisioning" state, after Pending, which kicks off capacity provider
+- CloudWatch auto-generated alarms
+  - scale-out after 1 min (normal target tracking is 3 min?)
+  - scale-in after 15 min
+
+##  Managed Scaling vs Managed Instance Protection
+### Managed Scaling
+- causes ECS to manage scale-in and scale-out
+- creates the Target Tracking autoscaling policy
+  - targetCapacity is used for TargetTracking
+- if disabled, what's the point of Capacity Provider?
+
+#### Test
+
+- 2 hosts - t2.medium (2 cpu, 4 GB)
+- 10 httpbin tasks - 256 cpu_shares - spread(az), spread(instance)
+- result 0: 
+  - even split 5/5 tasks
+  - CapacityProviderReservation = 100
+- test: deploy httpbin-large requiring 2000 cpu_shares ; 
+  - hypothesis - task=provisioning then CapacityProvider 150 then add host then run task
+  - result 1
+    - **Provisioning is stuck**
+      - Task stuck in Provisioning
+      - CapacityProviderReservation stays at 100
+      - host count stays at 2
+      - Even though for M/N calculation, M should be 3
+        - 2*2048 - (10 * 256 + 2000) = -464
+      - waited ~10 min
+- test: update target % 100 -> 90
+  - hypothesis: 3rd host launched, provisioning task can run
+    - correct
+  - result 2
+    - CW Alarms updated to:
+      - "> 90 for 1 min"
+      - < 81 for 15 min
+    - 3rd host launched - CapacityProviderReservation stays at 100
+    - alarm triggered again
+    - 4th host launched
+    - CapacityProviderReservation drops to 75 (_below scale-in_)
+    - no scale-out/in cycle due to Managed Term Protection?
+      - but ASG desired size was 4
+- if instance launched but alarm still open, doesn't retrigger scaling policy (stuck)
+ 
+### Managed Termination Protection
+- requires Managed Scaling to be enabled
+- prevents instances with tasks from beign terminated, via using ASG native "scale in protection"
+  - goal is to not disrupt services on a host
+- concern: could lead to many hosts with just one task, unbalanced?
+- if enabled then disabled, existing instances don't have this removed
+
+## questions
+- can support ASG with multiple instance type overrides?
+- managed termination protection - would this increase costs due to hosts with just single tasks?
+  - should still use lambda drainer for this?
+- what if large task is spun up but no gap
+- can normal Target Tracking have 1 minute scale out threshold? is this a secret API?
+
 # 2021-11-07 ECS Optimized AMI notes
 
 ```

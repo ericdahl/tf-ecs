@@ -25,9 +25,9 @@ resource "aws_ecs_capacity_provider" "default" {
 
     managed_scaling {
       status                    = "ENABLED"
-      target_capacity           = 100
+      target_capacity           = 90
     }
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = "DISABLED"
 
   }
 }
