@@ -25,7 +25,8 @@ resource "aws_ecs_capacity_provider" "default" {
 
     managed_scaling {
       status                    = "ENABLED"
-      target_capacity           = 90
+      target_capacity           = 100
+
     }
     managed_termination_protection = "DISABLED"
 
@@ -35,14 +36,18 @@ resource "aws_ecs_capacity_provider" "default" {
 resource "aws_ecs_cluster" "default" {
   name = var.name
 
+}
+
+resource "aws_ecs_cluster_capacity_providers" "default" {
+  cluster_name = aws_ecs_cluster.default.name
+
   capacity_providers = [aws_ecs_capacity_provider.default.name]
 
   default_capacity_provider_strategy {
+    weight            = 100
     capacity_provider = aws_ecs_capacity_provider.default.name
-    weight = 100
   }
 }
-
 
 
 data "template_file" "cloud_init" {

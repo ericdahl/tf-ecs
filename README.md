@@ -70,8 +70,10 @@ unhealthy_threshold=2? 10/12 were healthy immediately but other 2 failed repeate
 - CloudWatch auto-generated alarms
   - scale-out after 1 min (normal target tracking is 3 min?)
   - scale-in after 15 min
+- can support multiple instance types
 
 ##  Managed Scaling vs Managed Instance Protection
+
 ### Managed Scaling
 - causes ECS to manage scale-in and scale-out
 - creates the Target Tracking autoscaling policy
@@ -117,11 +119,49 @@ unhealthy_threshold=2? 10/12 were healthy immediately but other 2 failed repeate
 - concern: could lead to many hosts with just one task, unbalanced?
 - if enabled then disabled, existing instances don't have this removed
 
+## Migration Path
+
+- ECS Services have must have one of the following:
+  - Launch Type: EC2/Fargate
+  - Capacity Provider Strategy: array of capacity providers
+  - Defaults - New Service
+    - if ECS Cluster has a Default Capacity Provider Strategy, Service gets CP
+    - else: Service uses LT: EC2
+  - Existing Service
+    - does not get switched to Capacity Provider
+    - Possible to switch but requires task recycle
+
+### Tests
+
+- Test 1
+  - Cluster with CP; legacy service with LT: EC2 (via old default)
+    - ECS redeploy - no change to service
+    - ECS deploy with capacity provider set in TF - no change to service
+      - bug?
+    - ECS deploy after manual change to enable CP - no change
+      - TF state file auto-updates to use CP rather than LT
+        - ideal logic for migration but special cases here?
+- need to test with DAEMONS
+
+### Plan
+
+- Criteria
+  - Need to avoid unnecessary Service Recreates to avoid downtime
+- Caveats
+  - **Can't switch from LT to CP for an ECS Service with TF normally**
+    - Plan shows no changes
+    - could recreate via taint
+- ensure ECS Service module doesn't define launch type or Capacity Provider Strategy
+  - to support both cluster types at once
+  - default: if cluster has default CP, CP, otherwise EC2 LT
+- switch old ECS Service manually from LT to CP
+  - tests: when not defined, TF seems fine with this, "no changes". 
+    - state updates automatically without issue
+    - TODO: special cases here for some TF Services?
+
 ## questions
-- can support ASG with multiple instance type overrides?
 - managed termination protection - would this increase costs due to hosts with just single tasks?
   - should still use lambda drainer for this?
-- what if large task is spun up but no gap
 - can normal Target Tracking have 1 minute scale out threshold? is this a secret API?
 
 # 2021-11-07 ECS Optimized AMI notes
