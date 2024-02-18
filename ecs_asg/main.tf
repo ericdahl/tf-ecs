@@ -46,7 +46,6 @@ resource "aws_autoscaling_group" "default" {
     }
   }
 
-  protect_from_scale_in = true
 }
 
 resource "aws_launch_template" "default" {

@@ -27,15 +27,17 @@ resource "aws_ecs_capacity_provider" "default" {
       status                    = "ENABLED"
       target_capacity           = 100
 
+
     }
     managed_termination_protection = "DISABLED"
+    managed_draining = "ENABLED"
+
 
   }
 }
 
 resource "aws_ecs_cluster" "default" {
   name = var.name
-
 }
 
 resource "aws_ecs_cluster_capacity_providers" "default" {

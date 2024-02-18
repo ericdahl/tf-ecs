@@ -14,7 +14,7 @@ resource "aws_ecs_service" "httpbin" {
   cluster         = aws_ecs_cluster.default.name
   name            = "tf-cluster-httpbin"
   task_definition = aws_ecs_task_definition.httpbin[0].arn
-  desired_count   = "1"
+  desired_count   = 7
 
 #  launch_type = "EC2"
 
