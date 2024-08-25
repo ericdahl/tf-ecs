@@ -29,7 +29,27 @@ resource "aws_autoscaling_group" "default" {
       }
 
       override {
-        instance_type = "t3a.small"
+        instance_requirements {
+          cpu_manufacturers = [
+            "amd",
+            "intel",
+          ]
+          memory_mib {
+            min = 2048
+            max = 8192
+          }
+          vcpu_count {
+            min = 1
+            max = 4
+          }
+
+          accelerator_count {
+            max = 0
+          }
+          burstable_performance = "included"
+
+          on_demand_max_price_percentage_over_lowest_price = 65
+        }
       }
     }
 
@@ -46,10 +66,7 @@ resource "aws_autoscaling_group" "default" {
       instance_warmup        = 0
     }
   }
-
 }
-
-
 
 
 resource "aws_launch_template" "default" {
