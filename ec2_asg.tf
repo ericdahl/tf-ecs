@@ -1,11 +1,15 @@
 resource "aws_autoscaling_group" "default" {
   name = var.name
 
-  min_size         = var.min_size
-  max_size         = var.max_size
-  desired_capacity = var.desired_size
+  min_size         = var.asg_min_size
+  max_size         = var.asg_max_size
+  desired_capacity = var.asg_desired_size
 
-  vpc_zone_identifier = var.subnets
+  vpc_zone_identifier = [
+    module.vpc.subnet_private1,
+    module.vpc.subnet_private2,
+    module.vpc.subnet_private3,
+  ]
 
   tag {
     key                 = "Name"
@@ -24,17 +28,14 @@ resource "aws_autoscaling_group" "default" {
         version            = aws_launch_template.default.latest_version
       }
 
-      dynamic "override" {
-        for_each = var.overrides
-        content {
-          instance_type = override.value["instance_type"]
-        }
+      override {
+        instance_type = "t3a.small"
       }
     }
 
     instances_distribution {
       # 0% means no on-demand
-      on_demand_percentage_above_base_capacity = var.on_demand_percentage_above_base_capacity
+      on_demand_percentage_above_base_capacity = 100
     }
   }
 
@@ -48,22 +49,36 @@ resource "aws_autoscaling_group" "default" {
 
 }
 
+
+
+
 resource "aws_launch_template" "default" {
   name = var.name
 
   iam_instance_profile {
-    name = var.instance_profile_name
+    name = aws_iam_instance_profile.ecs_ec2.name
   }
 
-  image_id      = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.key_name
+  image_id      = data.aws_ssm_parameter.ecs_amazon_linux_2.value
+  instance_type = "t3.small"
 
   monitoring {
     enabled = true
   }
 
-  vpc_security_group_ids = var.security_groups
+  vpc_security_group_ids = [aws_security_group.ecs_instance.id]
 
-  user_data = base64encode(var.user_data)
+  user_data = base64encode(<<EOF
+#!/bin/bash
+echo "ECS_CLUSTER=${var.name}" >> /etc/ecs/ecs.config
+EOF
+  )
+
+  #   user_data_bottlerocket = <<EOF
+  # [settings.ecs]
+  # cluster = "${var.name}"
+  #
+  # [settings.host-containers.admin]
+  # enabled = true
+  # EOF
 }

@@ -1,20 +1,17 @@
 # tf-ecs
 
-Terraform AWS ECS modules
+ECS Example with Terraform
 
-The `tf` files in the root of the repo launch a test cluster
+This creates a EC2-based ECS Cluster using a Capacity Provider. For an even simpler Fargate (serverless)
+example, see <https://github.com/ericdahl/hello-ecs>. EC2 can be helpful in some situations, particularly
+when debugging and understanding how ECS works (e.g., via monitoring logs, docker commands, etc)
 
-## ecs_cluster
+This has various demo services that can be
+toggled on via variables. You can enable them with a `terraform.tfvars` file like:
 
-Cluster-wide resources like
-
-- ECS Cluster
-- IAM roles for cluster
-- AMI selection
-
-## ecs_asg
-
-AutoScaling Group to add to cluster
+```
+enable_ec2_httpbin = true
+```
 
 # Notes
 

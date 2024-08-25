@@ -1,7 +1,7 @@
 resource "aws_ecs_task_definition" "ghost" {
   count = var.enable_ec2_ghost ? 1 : 0
 
-  family                = "ghost"
+  family = "ghost"
 
   container_definitions = templatefile("templates/tasks/ghost.json", {
     url           = "http://${aws_alb.ecs_service_ghost[0].dns_name}"
@@ -101,7 +101,7 @@ resource "aws_rds_cluster" "ghost" {
   skip_final_snapshot       = true
   final_snapshot_identifier = "ghost"
 
-  db_subnet_group_name = aws_db_subnet_group.ghost[0].name
+  db_subnet_group_name   = aws_db_subnet_group.ghost[0].name
   vpc_security_group_ids = [module.vpc.sg_allow_vpc]
 }
 

@@ -1,10 +1,10 @@
 resource "aws_ecs_task_definition" "httpbin" {
   count = var.enable_ec2_httpbin ? 1 : 0
 
-  family                = "httpbin"
+  family = "httpbin"
 
   container_definitions = templatefile("templates/tasks/httpbin.json", {
-    delay_start_connect: 0
+    delay_start_connect : 0
   })
 }
 
@@ -16,49 +16,49 @@ resource "aws_ecs_service" "httpbin" {
   task_definition = aws_ecs_task_definition.httpbin[0].arn
   desired_count   = 7
 
-#  launch_type = "EC2"
+  #  launch_type = "EC2"
 
-#  capacity_provider_strategy {
-#    capacity_provider = aws_ecs_capacity_provider.default.name
-#    weight = 100
-#  }
-#  force_new_deployment = true
+  #  capacity_provider_strategy {
+  #    capacity_provider = aws_ecs_capacity_provider.default.name
+  #    weight = 100
+  #  }
+  #  force_new_deployment = true
 
-#  deployment_circuit_breaker {
-#    enable   = true
-#    rollback = true
-#  }
-#
-#  enable_ecs_managed_tags = "true"
-#  propagate_tags          = "SERVICE"
-#  tags = {
-#    ServiceName = "tf-cluster-httpbin"
-#    ClusterName = "tf-cluster"
-#  }
-#
-#  # to avoid possible race condition error on creation
-##  depends_on = [aws_alb.ecs_service_httpbin]
-#
-#  ordered_placement_strategy {
-#    type  = "spread"
-#    field = "attribute:ecs.availability-zone"
-#  }
-#
-#  ordered_placement_strategy {
-#    type  = "spread"
-#    field = "instanceId"
-#  }
+  #  deployment_circuit_breaker {
+  #    enable   = true
+  #    rollback = true
+  #  }
+  #
+  #  enable_ecs_managed_tags = "true"
+  #  propagate_tags          = "SERVICE"
+  #  tags = {
+  #    ServiceName = "tf-cluster-httpbin"
+  #    ClusterName = "tf-cluster"
+  #  }
+  #
+  #  # to avoid possible race condition error on creation
+  ##  depends_on = [aws_alb.ecs_service_httpbin]
+  #
+  #  ordered_placement_strategy {
+  #    type  = "spread"
+  #    field = "attribute:ecs.availability-zone"
+  #  }
+  #
+  #  ordered_placement_strategy {
+  #    type  = "spread"
+  #    field = "instanceId"
+  #  }
 
-#  load_balancer {
-#    target_group_arn = aws_alb_target_group.default[0].arn
-#    container_name   = "httpbin"
-#    container_port   = 8080
-#  }
+  #  load_balancer {
+  #    target_group_arn = aws_alb_target_group.default[0].arn
+  #    container_name   = "httpbin"
+  #    container_port   = 8080
+  #  }
 
   // Note: As of May 2018, this will stop a task from being
   // killed on startup, but the ALB UnHealthyHost metric is
   // still recorded
-#  health_check_grace_period_seconds = 300
+  #  health_check_grace_period_seconds = 300
 
   lifecycle {
     ignore_changes = [

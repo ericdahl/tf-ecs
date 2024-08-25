@@ -2,9 +2,6 @@ variable "name" {
   default = "tf-ecs"
 }
 
-variable "ssh_public_key" {
-}
-
 variable "asg_desired_size" {
   default = 3
 }
@@ -15,10 +12,6 @@ variable "asg_min_size" {
 
 variable "asg_max_size" {
   default = 3
-}
-
-variable "admin_cidr" {
-  default = "0.0.0.0/0"
 }
 
 variable "ecs_asg_desired_size" {

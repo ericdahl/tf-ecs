@@ -1,6 +1,6 @@
 resource "aws_ecs_task_definition" "demo_service_discovery" {
-  count = var.enable_ec2_demo_service_discovery ? 1 : 0
-  family                = "demo_service_discovery"
+  count  = var.enable_ec2_demo_service_discovery ? 1 : 0
+  family = "demo_service_discovery"
 
   container_definitions = templatefile("templates/tasks/demo_service_discovery.json", {})
 }

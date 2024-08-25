@@ -1,11 +1,11 @@
 resource "aws_ecs_task_definition" "ssm_secret" {
-  count                 = var.enable_ec2_ssm_secret ? 1 : 0
-  family                = "ssm_secret"
-  execution_role_arn    = aws_iam_role.ssm_secret[0].arn
+  count              = var.enable_ec2_ssm_secret ? 1 : 0
+  family             = "ssm_secret"
+  execution_role_arn = aws_iam_role.ssm_secret[0].arn
 
   container_definitions = templatefile("templates/tasks/ssm_secret.json", {
-    taskExecutionRole: aws_iam_role.ssm_secret[0].arn
-    ssmParameterArn: aws_ssm_parameter.ssm_secret[0].arn
+    taskExecutionRole : aws_iam_role.ssm_secret[0].arn
+    ssmParameterArn : aws_ssm_parameter.ssm_secret[0].arn
   })
 }
 
