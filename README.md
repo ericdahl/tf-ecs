@@ -16,11 +16,6 @@ Cluster-wide resources like
 
 AutoScaling Group to add to cluster
 
-## ecs_drainer
-
-Lambda to drain container instances on ASG scale-in events
-
-
 # Notes
 
 ## Investigation on task startup time limit with ALB
