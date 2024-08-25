@@ -76,7 +76,7 @@ resource "aws_launch_template" "default" {
     name = aws_iam_instance_profile.ecs_ec2.name
   }
 
-  image_id      = data.aws_ssm_parameter.ecs_amazon_linux_2.value
+  image_id      = data.aws_ssm_parameter.ecs_amazon_linux_2023.value
   instance_type = "t3.small"
 
   monitoring {
